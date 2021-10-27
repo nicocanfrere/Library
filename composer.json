@@ -48,7 +48,8 @@
         "mezzio/mezzio": "^3.5.0",
         "mezzio/mezzio-fastroute": "^3.0.3",
         "mezzio/mezzio-helpers": "^5.6.0",
-        "ramsey/uuid": "^4.2"
+        "ramsey/uuid": "^4.2",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "filp/whoops": "^2.7.1",
@@ -66,7 +67,8 @@
     "autoload": {
         "psr-4": {
             "App\\": "src/App/",
-            "Library\\": "src/Library/"
+            "Library\\": "src/Library/",
+            "Infrastructure\\": "src/Infrastructure/"
         }
     },
     "autoload-dev": {

@@ -38,4 +38,5 @@ use Psr\Container\ContainerInterface;
  */
 
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
+    $app->get('/', App\Handler\IndexHandler::class, 'index');
 };

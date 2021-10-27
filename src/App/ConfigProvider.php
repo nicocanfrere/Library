@@ -31,7 +31,9 @@ class ConfigProvider
     {
         return [
             'invokables' => [],
-            'factories'  => [],
+            'factories'  => [
+                Handler\IndexHandler::class => Handler\IndexHandlerFactory::class,
+            ],
         ];
     }
 }
