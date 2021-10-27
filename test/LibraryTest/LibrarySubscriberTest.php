@@ -8,6 +8,10 @@ use Library\Contract\LibrarySubscriberInterface;
 use Library\LibrarySubscriber;
 use PHPUnit\Framework\TestCase;
 
+/*
+ * Specs :
+ * Un utilisateur contient identifiant unique (UUID) nom, prénom, email (unique).
+ */
 class LibrarySubscriberTest extends TestCase
 {
     /**
