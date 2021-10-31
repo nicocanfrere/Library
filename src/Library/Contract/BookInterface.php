@@ -6,6 +6,8 @@ namespace Library\Contract;
 
 interface BookInterface
 {
+    public function __construct();
+
     public static function create(
         string $uuid,
         string $title,
@@ -20,4 +22,6 @@ interface BookInterface
     public function getYearOfPublication(): ?int;
 
     public function getAuthorName(): ?string;
+
+    public function toArray(): array;
 }

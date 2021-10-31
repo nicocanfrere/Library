@@ -6,6 +6,8 @@ namespace Library\Contract;
 
 interface LibrarySubscriberInterface
 {
+    public function __construct();
+
     public static function create(
         string $uuid,
         string $firstName,
