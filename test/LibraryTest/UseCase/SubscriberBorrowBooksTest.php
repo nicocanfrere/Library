@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace LibraryTest\UseCase;
 
+use Library\BookBorrowRegistryFactory;
+use Library\Contract\BookBorrowRegistryFactoryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\BookRepositoryInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
@@ -16,13 +18,13 @@ class SubscriberBorrowBooksTest extends TestCase
 {
     private LibrarySubscriberRepositoryInterface $subscriberRepository;
     private BookRepositoryInterface $bookRepository;
-    private BookBorrowRegistryRepositoryInterface $registryRepository;
+    private BookBorrowRegistryFactoryInterface $registryFactory;
 
     protected function setUp(): void
     {
         $this->subscriberRepository = $this->createMock(LibrarySubscriberRepositoryInterface::class);
         $this->bookRepository       = $this->createMock(BookRepositoryInterface::class);
-        $this->registryRepository   = $this->createMock(BookBorrowRegistryRepositoryInterface::class);
+        $this->registryFactory      = $this->createMock(BookBorrowRegistryFactoryInterface::class);
     }
 
     /**
@@ -34,7 +36,7 @@ class SubscriberBorrowBooksTest extends TestCase
         $subscriberBorrowBooks = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,
-            $this->registryRepository
+            $this->registryFactory
         );
         $this->expectException(LibrarySubscriberNotFoundException::class);
         $subscriberBorrowBooks->borrow('subscriber-uuid', []);
@@ -47,11 +49,10 @@ class SubscriberBorrowBooksTest extends TestCase
     {
         $this->subscriberRepository->method('findLibrarySubscriberByUuid')->willReturn(['uuid']);
         $this->bookRepository->method('findBookByUuid')->willReturn([true]);
-        $this->registryRepository->method('bookCanBeBorrowed')->willReturn(true);
         $subscriberBorrowBooks = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,
-            $this->registryRepository
+            $this->registryFactory
         );
         $result                = $subscriberBorrowBooks->borrow('subscriber-uuid', ['book-uuid']);
         $this->assertArrayHasKey(SubscriberBorrowBooksInterface::BORROWED_BOOKS, $result);
@@ -66,13 +67,15 @@ class SubscriberBorrowBooksTest extends TestCase
     {
         $this->subscriberRepository->method('findLibrarySubscriberByUuid')->willReturn(['uuid']);
         $this->bookRepository->method('findBookByUuid')->willReturn([true]);
-        $this->registryRepository->method('bookCanBeBorrowed')->willReturn(false);
-        $subscriberBorrowBooks = new SubscriberBorrowBooks(
+        $bookBorrowRegistryRepository = $this->createMock(BookBorrowRegistryRepositoryInterface::class);
+        $bookBorrowRegistryRepository->method('bookCanBeBorrowed')->willReturn(false);
+        $bookBorrowRegistryFactory = new BookBorrowRegistryFactory($bookBorrowRegistryRepository);
+        $subscriberBorrowBooks     = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,
-            $this->registryRepository
+            $bookBorrowRegistryFactory
         );
-        $result                = $subscriberBorrowBooks->borrow('subscriber-uuid', ['book-uuid']);
+        $result                    = $subscriberBorrowBooks->borrow('subscriber-uuid', ['book-uuid']);
         $this->assertArrayHasKey(SubscriberBorrowBooksInterface::NOT_BORROWABLE_BOOKS, $result);
         $this->assertCount(1, $result[SubscriberBorrowBooksInterface::NOT_BORROWABLE_BOOKS]);
         $this->assertEquals('book-uuid', $result[SubscriberBorrowBooksInterface::NOT_BORROWABLE_BOOKS][0]);
@@ -88,7 +91,7 @@ class SubscriberBorrowBooksTest extends TestCase
         $subscriberBorrowBooks = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,
-            $this->registryRepository
+            $this->registryFactory
         );
         $result                = $subscriberBorrowBooks->borrow('subscriber-uuid', ['book-uuid']);
         $this->assertArrayHasKey(SubscriberBorrowBooksInterface::UNKNOWN_BOOKS, $result);
