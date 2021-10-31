@@ -10,6 +10,7 @@ use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\LibrarySubscriber;
+use Psr\Log\LoggerInterface;
 
 class LibrarySubscriberRepository extends AbstractRepository implements
     LibrarySubscriberRepositoryInterface
@@ -39,10 +40,11 @@ class LibrarySubscriberRepository extends AbstractRepository implements
     ];
 
     public function __construct(
-        DatabaseConnectionInterface $connection,
-        protected BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository
+        protected DatabaseConnectionInterface $connection,
+        protected BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository,
+        protected LoggerInterface $logger
     ) {
-        parent::__construct($connection);
+        parent::__construct($this->connection, $this->logger);
     }
 
     public function registerNewLibrarySubscriber(LibrarySubscriberInterface $subscriber): void

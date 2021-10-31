@@ -10,6 +10,7 @@ use Library\Book;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\BookInterface;
 use Library\Contract\BookRepositoryInterface;
+use Psr\Log\LoggerInterface;
 
 class BookRepository extends AbstractRepository implements BookRepositoryInterface
 {
@@ -39,8 +40,10 @@ class BookRepository extends AbstractRepository implements BookRepositoryInterfa
 
     public function __construct(
         protected DatabaseConnectionInterface $connection,
-        protected BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository
+        protected BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository,
+        protected LoggerInterface $logger
     ) {
+        parent::__construct($this->connection, $this->logger);
     }
 
     public function registerNewBook(BookInterface $book): void

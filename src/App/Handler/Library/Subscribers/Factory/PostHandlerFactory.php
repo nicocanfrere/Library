@@ -11,6 +11,7 @@ use Laminas\InputFilter\InputFilterPluginManager;
 use Library\Contract\LibrarySubscriberFactoryInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class PostHandlerFactory
 {
@@ -20,7 +21,8 @@ class PostHandlerFactory
         $inputFilter       = $pluginManager->get(LibrarySubscriberInputFilter::class);
         $subscriberFactory = $container->get(LibrarySubscriberFactoryInterface::class);
         $provider          = $container->get(LibrarySubscriberDataProvider::class);
+        $logger            = $container->get(LoggerInterface::class);
 
-        return new PostHandler($inputFilter, $subscriberFactory, $provider);
+        return new PostHandler($inputFilter, $subscriberFactory, $provider, $logger);
     }
 }

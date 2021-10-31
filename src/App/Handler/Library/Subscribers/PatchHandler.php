@@ -14,13 +14,15 @@ use Library\Exception\LibrarySubscriberNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class PatchHandler implements RequestHandlerInterface
 {
     public function __construct(
         private InputFilterInterface $inputFilter,
         private UpdateSubscriberInterface $updateSubscriber,
-        private DataProviderInterface $provider
+        private DataProviderInterface $provider,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -37,13 +39,22 @@ class PatchHandler implements RequestHandlerInterface
 
                 return new JsonResponse($subscriber, 200);
             } catch (LibrarySubscriberNotFoundException $exception) {
-                //TODO log
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
                 return new JsonResponse(['error' => ['message' => $exception->getMessage()]], 404);
             } catch (LibrarySubscriberEmailAlreadyUsedException $exception) {
-                //TODO log
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
                 return new JsonResponse(['error' => ['message' => $exception->getMessage()]], 422);
             } catch (Exception $exception) {
-                //TODO log
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
                 return new JsonResponse([], 500);
             }
         }
@@ -52,6 +63,10 @@ class PatchHandler implements RequestHandlerInterface
         foreach ($this->inputFilter->getInvalidInput() as $error) {
             $errors[$error->getName()] = $error->getMessages();
         }
+        $this->logger->critical(
+            __METHOD__,
+            ['errors' => $errors]
+        );
 
         return new JsonResponse(['errors' => $errors], 422);
     }

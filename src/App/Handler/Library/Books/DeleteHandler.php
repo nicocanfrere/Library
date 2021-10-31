@@ -11,11 +11,13 @@ use Library\Exception\BookNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class DeleteHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private RemoveBookInterface $removeBook
+        private RemoveBookInterface $removeBook,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -27,10 +29,16 @@ class DeleteHandler implements RequestHandlerInterface
 
             return new JsonResponse($book);
         } catch (BookNotFoundException $exception) {
-            //TODO log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
             return new JsonResponse(['error' => ['message' => $exception->getMessage()]], 404);
         } catch (Exception $exception) {
-            //TODO log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
             return new JsonResponse([], 500);
         }
     }

@@ -11,6 +11,7 @@ use Laminas\InputFilter\InputFilterPluginManager;
 use Library\Contract\BookFactoryInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class PostHandlerFactory
 {
@@ -20,7 +21,8 @@ class PostHandlerFactory
         $inputFilter   = $pluginManager->get(BookCreateInputFilter::class);
         $bookFactory   = $container->get(BookFactoryInterface::class);
         $provider      = $container->get(BookDataProvider::class);
+        $logger        = $container->get(LoggerInterface::class);
 
-        return new PostHandler($inputFilter, $bookFactory, $provider);
+        return new PostHandler($inputFilter, $bookFactory, $provider, $logger);
     }
 }

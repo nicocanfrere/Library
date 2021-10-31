@@ -8,5 +8,6 @@ use Exception;
 
 class BookNotFoundInRegistryException extends Exception
 {
+    /** @var string */
     protected $message = 'book_borrow_registry.book_not_found.error';
 }

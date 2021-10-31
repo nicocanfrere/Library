@@ -18,6 +18,7 @@ class BookDataProvider extends AbstractDataProvider
         protected UrlHelper $urlHelper,
         protected string $class
     ) {
+        parent::__construct($this->urlHelper, $this->class);
     }
 
     public function single(string $uuid): array

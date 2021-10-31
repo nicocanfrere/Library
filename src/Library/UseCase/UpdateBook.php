@@ -9,6 +9,7 @@ use Library\Contract\BookInterface;
 use Library\Contract\BookRepositoryInterface;
 use Library\Contract\UpdateBookInterface;
 use Library\Exception\BookNotFoundException;
+use Psr\Log\LoggerInterface;
 
 use function array_filter;
 use function array_merge;
@@ -16,7 +17,8 @@ use function array_merge;
 class UpdateBook implements UpdateBookInterface
 {
     public function __construct(
-        private BookRepositoryInterface $bookRepository
+        private BookRepositoryInterface $bookRepository,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -24,7 +26,12 @@ class UpdateBook implements UpdateBookInterface
     {
         $book = $this->bookRepository->findBookByUuid($uuid);
         if (! $book) {
-            throw new BookNotFoundException();
+            $exception = new BookNotFoundException();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
+            throw $exception;
         }
         unset($data['uuid']);
         $filtered = array_filter($data);

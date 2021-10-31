@@ -8,5 +8,6 @@ use Exception;
 
 class BookAlreadyBorrowedException extends Exception
 {
+    /** @var string */
     protected $message = 'book_borrow_registry.book_already_borrowed.error';
 }

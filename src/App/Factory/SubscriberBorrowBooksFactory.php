@@ -10,6 +10,7 @@ use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Contract\SubscriberBorrowBooksInterface;
 use Library\UseCase\SubscriberBorrowBooks;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class SubscriberBorrowBooksFactory
 {
@@ -18,11 +19,13 @@ class SubscriberBorrowBooksFactory
         $subscriberRepository = $container->get(LibrarySubscriberRepositoryInterface::class);
         $bookRepository       = $container->get(BookRepositoryInterface::class);
         $registryFactory      = $container->get(BookBorrowRegistryFactoryInterface::class);
+        $logger               = $container->get(LoggerInterface::class);
 
         return new SubscriberBorrowBooks(
             $subscriberRepository,
             $bookRepository,
-            $registryFactory
+            $registryFactory,
+            $logger
         );
     }
 }

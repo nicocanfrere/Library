@@ -9,6 +9,7 @@ use Library\Contract\BookRepositoryInterface;
 use Library\Contract\RemoveBookInterface;
 use Library\UseCase\RemoveBook;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class RemoveBookFactory
 {
@@ -16,7 +17,8 @@ class RemoveBookFactory
     {
         $repository = $container->get(BookRepositoryInterface::class);
         $factory    = $container->get(BookFactoryInterface::class);
+        $logger     = $container->get(LoggerInterface::class);
 
-        return new RemoveBook($repository, $factory);
+        return new RemoveBook($repository, $factory, $logger);
     }
 }

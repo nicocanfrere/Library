@@ -8,12 +8,14 @@ use Library\Contract\BookBorrowRegistryFactoryInterface;
 use Library\Contract\BookBorrowRegistryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Exception\BookAlreadyBorrowedException;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 class BookBorrowRegistryFactory implements BookBorrowRegistryFactoryInterface
 {
     public function __construct(
-        private BookBorrowRegistryRepositoryInterface $repository
+        private BookBorrowRegistryRepositoryInterface $repository,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -21,7 +23,12 @@ class BookBorrowRegistryFactory implements BookBorrowRegistryFactoryInterface
     {
         $canBeBorrowed = $this->repository->bookCanBeBorrowed($data['book_uuid']);
         if (! $canBeBorrowed) {
-            throw new BookAlreadyBorrowedException();
+            $exception = new BookAlreadyBorrowedException();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
+            throw $exception;
         }
         $uuid     = ! empty($data['uuid']) ? $data['uuid'] : Uuid::uuid4()->toString();
         $registry = BookBorrowRegistry::create(

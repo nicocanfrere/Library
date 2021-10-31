@@ -11,18 +11,21 @@ use Library\BookFactory;
 use Library\Contract\BookRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 class PostHandlerTest extends TestCase
 {
     protected InputFilterInterface $inputFilter;
     protected DataProviderInterface $bookDataProvider;
     protected BookRepositoryInterface $bookRepository;
+    private LoggerInterface $logger;
 
     protected function setUp(): void
     {
         $this->inputFilter      = $this->createMock(InputFilterInterface::class);
         $this->bookDataProvider = $this->createMock(DataProviderInterface::class);
         $this->bookRepository   = $this->createMock(BookRepositoryInterface::class);
+        $this->logger           = $this->createMock(LoggerInterface::class);
     }
 
     /**
@@ -39,7 +42,8 @@ class PostHandlerTest extends TestCase
         $handler = new PostHandler(
             $this->inputFilter,
             new BookFactory($this->bookRepository),
-            $this->bookDataProvider
+            $this->bookDataProvider,
+            $this->logger
         );
 
         $response = $handler->handle($request);

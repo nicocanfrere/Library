@@ -8,13 +8,15 @@ use App\Handler\Library\Books\DeleteHandler;
 use Library\Contract\RemoveBookInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class DeleteHandlerFactory
 {
     public function __invoke(ContainerInterface $container): RequestHandlerInterface
     {
         $removeBook = $container->get(RemoveBookInterface::class);
+        $logger     = $container->get(LoggerInterface::class);
 
-        return new DeleteHandler($removeBook);
+        return new DeleteHandler($removeBook, $logger);
     }
 }

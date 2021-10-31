@@ -11,16 +11,19 @@ use Library\Contract\BookRepositoryInterface;
 use Library\Exception\BookNotFoundException;
 use Library\UseCase\RemoveBook;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class RemoveBookTest extends TestCase
 {
     private BookRepositoryInterface $bookRepository;
     private BookFactoryInterface $bookFactory;
+    private LoggerInterface $logger;
 
     protected function setUp(): void
     {
         $this->bookRepository = $this->createMock(BookRepositoryInterface::class);
         $this->bookFactory    = $this->createMock(BookFactoryInterface::class);
+        $this->logger         = $this->createMock(LoggerInterface::class);
     }
 
     /**
@@ -30,7 +33,7 @@ class RemoveBookTest extends TestCase
     {
         $this->bookRepository->method('findBookByUuid')->willReturn(null);
         $this->expectException(BookNotFoundException::class);
-        $removeBook = new RemoveBook($this->bookRepository, $this->bookFactory);
+        $removeBook = new RemoveBook($this->bookRepository, $this->bookFactory, $this->logger);
         $removeBook->remove('uuid');
     }
 
@@ -43,7 +46,8 @@ class RemoveBookTest extends TestCase
         $this->bookRepository->method('findBookByUuid')->willReturn($values);
         $remover = new RemoveBook(
             $this->bookRepository,
-            new BookFactory($this->bookRepository)
+            new BookFactory($this->bookRepository),
+            $this->logger
         );
         $book    = $remover->remove('uuid');
         $this->assertInstanceOf(BookInterface::class, $book);

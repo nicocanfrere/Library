@@ -9,6 +9,7 @@ use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Contract\SubscriberReturnBookInterface;
 use Library\UseCase\SubscriberReturnBook;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class SubscriberReturnBookFactory
 {
@@ -16,7 +17,8 @@ class SubscriberReturnBookFactory
     {
         $subscriberRepository = $container->get(LibrarySubscriberRepositoryInterface::class);
         $registryRepository   = $container->get(BookBorrowRegistryRepositoryInterface::class);
+        $logger               = $container->get(LoggerInterface::class);
 
-        return new SubscriberReturnBook($subscriberRepository, $registryRepository);
+        return new SubscriberReturnBook($subscriberRepository, $registryRepository, $logger);
     }
 }

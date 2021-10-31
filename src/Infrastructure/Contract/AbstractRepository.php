@@ -6,6 +6,7 @@ namespace Infrastructure\Contract;
 
 use Exception;
 use PDOException;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 use function array_keys;
@@ -22,8 +23,10 @@ use function ucfirst;
 
 abstract class AbstractRepository
 {
-    public function __construct(protected DatabaseConnectionInterface $connection)
-    {
+    public function __construct(
+        protected DatabaseConnectionInterface $connection,
+        protected LoggerInterface $logger
+    ) {
     }
 
     public function insert(array $metadata, mixed $resource): void
@@ -37,13 +40,17 @@ abstract class AbstractRepository
             $success = $stmt->execute($data);
             $pdo->commit();
             if (false === $success) {
-                //TODO Log
-                $errorInfo = $stmt->errorInfo();
-                $errorCode = $stmt->execute();
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error_info' => $stmt->errorInfo(), 'error_code' => $stmt->errorCode()]
+                );
             }
         } catch (PDOException $exception) {
             $pdo->rollBack();
-            //TODO Log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
         }
     }
 
@@ -58,13 +65,17 @@ abstract class AbstractRepository
             $success = $stmt->execute($data);
             $pdo->commit();
             if (false === $success) {
-                //TODO Log
-                $errorInfo = $stmt->errorInfo();
-                $errorCode = $stmt->execute();
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error_info' => $stmt->errorInfo(), 'error_code' => $stmt->errorCode()]
+                );
             }
         } catch (Exception $exception) {
             $pdo->rollBack();
-            //TODO Log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
         }
     }
 
@@ -84,12 +95,17 @@ abstract class AbstractRepository
             $success = $stmt->execute([$metadata['primary'] => $resource->$method()]);
             $pdo->commit();
             if (false === $success) {
-                //TODO Log
-                $errorInfo = $stmt->errorInfo();
-                $errorCode = $stmt->execute();
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error_info' => $stmt->errorInfo(), 'error_code' => $stmt->errorCode()]
+                );
             }
         } catch (PDOException $exception) {
             $pdo->rollBack();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
         }
     }
 
@@ -107,16 +123,19 @@ abstract class AbstractRepository
             $stmt    = $pdo->prepare($sql);
             $success = $stmt->execute();
             if (false === $success) {
-                //TODO Log
-                $errorInfo = $stmt->errorInfo();
-                $errorCode = $stmt->execute();
-
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error_info' => $stmt->errorInfo(), 'error_code' => $stmt->errorCode()]
+                );
                 throw new Exception();
             }
 
             return $stmt->fetchAll();
         } catch (Exception $exception) {
-            //TODO log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
 
             return [];
         }
@@ -143,16 +162,19 @@ abstract class AbstractRepository
             $stmt          = $pdo->prepare($sql);
             $success       = $stmt->execute($parameters);
             if (false === $success) {
-                //TODO Log
-                $errorInfo = $stmt->errorInfo();
-                $errorCode = $stmt->execute();
-
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error_info' => $stmt->errorInfo(), 'error_code' => $stmt->errorCode()]
+                );
                 throw new Exception();
             }
 
             return $stmt->fetchAll();
         } catch (Exception $exception) {
-            //TODO log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
 
             return [];
         }
@@ -179,15 +201,20 @@ abstract class AbstractRepository
             $stmt          = $pdo->prepare($sql);
             $success       = $stmt->execute($parameters);
             if (false === $success) {
-                //TODO Log
-                $errorInfo = $stmt->errorInfo();
-                $errorCode = $stmt->execute();
-
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error_info' => $stmt->errorInfo(), 'error_code' => $stmt->errorCode()]
+                );
                 throw new Exception();
             }
             $results = $stmt->fetchAll();
             if (count($results) > 1) {
-                throw new Exception('More than one result');
+                $exception = new Exception('More than one result');
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
+                throw $exception;
             }
             if (count($results) === 0) {
                 return [];
@@ -195,7 +222,10 @@ abstract class AbstractRepository
 
             return $results[0];
         } catch (Exception $exception) {
-            //TODO log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
 
             return [];
         }

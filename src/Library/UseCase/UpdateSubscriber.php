@@ -10,6 +10,7 @@ use Library\Contract\UpdateSubscriberInterface;
 use Library\Exception\LibrarySubscriberEmailAlreadyUsedException;
 use Library\Exception\LibrarySubscriberNotFoundException;
 use Library\LibrarySubscriber;
+use Psr\Log\LoggerInterface;
 
 use function array_filter;
 use function array_key_exists;
@@ -18,7 +19,8 @@ use function array_merge;
 class UpdateSubscriber implements UpdateSubscriberInterface
 {
     public function __construct(
-        private LibrarySubscriberRepositoryInterface $repository
+        private LibrarySubscriberRepositoryInterface $repository,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -26,7 +28,12 @@ class UpdateSubscriber implements UpdateSubscriberInterface
     {
         $subscriber = $this->repository->findLibrarySubscriberByUuid($uuid);
         if (! $subscriber) {
-            throw new LibrarySubscriberNotFoundException();
+            $exception = new LibrarySubscriberNotFoundException();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
+            throw $exception;
         }
         if (
             array_key_exists('email', $data)
@@ -34,7 +41,12 @@ class UpdateSubscriber implements UpdateSubscriberInterface
         ) {
             $exists = $this->repository->findOneByEmail($data['email']);
             if ($exists && $exists['uuid'] !== $subscriber['uuid']) {
-                throw new LibrarySubscriberEmailAlreadyUsedException();
+                $exception = new LibrarySubscriberEmailAlreadyUsedException();
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
+                throw $exception;
             }
         }
         unset($data['uuid']);

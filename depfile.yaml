@@ -27,6 +27,12 @@ layers:
         type: classNameRegex
         regex: '#^Mezzio\\.*#'
   -
+    name: Monolog
+    collectors:
+      -
+        type: classNameRegex
+        regex: '#^Monolog\\.*#'
+  -
     name: Library
     collectors:
       -
@@ -53,6 +59,7 @@ ruleset:
     - Mezzio
   Infrastructure:
     - Psr
+    - Monolog
     - Library
   Library:
     - Psr

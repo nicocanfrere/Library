@@ -8,6 +8,7 @@ use Infrastructure\Contract\DatabaseConnectionInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 class LibrarySubscriberRepositoryFactory
 {
@@ -15,7 +16,8 @@ class LibrarySubscriberRepositoryFactory
     {
         $connection           = $container->get(DatabaseConnectionInterface::class);
         $bookBorrowRepository = $container->get(BookBorrowRegistryRepositoryInterface::class);
+        $logger               = $container->get(LoggerInterface::class);
 
-        return new LibrarySubscriberRepository($connection, $bookBorrowRepository);
+        return new LibrarySubscriberRepository($connection, $bookBorrowRepository, $logger);
     }
 }

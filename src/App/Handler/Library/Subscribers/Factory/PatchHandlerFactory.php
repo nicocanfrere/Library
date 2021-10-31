@@ -11,6 +11,7 @@ use Laminas\InputFilter\InputFilterPluginManager;
 use Library\Contract\UpdateSubscriberInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class PatchHandlerFactory
 {
@@ -20,7 +21,8 @@ class PatchHandlerFactory
         $inputFilter   = $pluginManager->get(LibrarySubscriberPatchInputFilter::class);
         $updater       = $container->get(UpdateSubscriberInterface::class);
         $provider      = $container->get(LibrarySubscriberDataProvider::class);
+        $logger        = $container->get(LoggerInterface::class);
 
-        return new PatchHandler($inputFilter, $updater, $provider);
+        return new PatchHandler($inputFilter, $updater, $provider, $logger);
     }
 }

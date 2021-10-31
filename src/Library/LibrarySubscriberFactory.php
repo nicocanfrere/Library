@@ -8,12 +8,15 @@ use Library\Contract\LibrarySubscriberFactoryInterface;
 use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Exception\LibrarySubscriberEmailAlreadyUsedException;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
 class LibrarySubscriberFactory implements LibrarySubscriberFactoryInterface
 {
-    public function __construct(private LibrarySubscriberRepositoryInterface $repository)
-    {
+    public function __construct(
+        private LibrarySubscriberRepositoryInterface $repository,
+        private LoggerInterface $logger
+    ) {
     }
 
     public function create(array $data, ?bool $save = true): LibrarySubscriberInterface
@@ -21,7 +24,12 @@ class LibrarySubscriberFactory implements LibrarySubscriberFactoryInterface
         if ($save) {
             $exists = $this->repository->findOneByEmail($data['email']);
             if (! empty($exists)) {
-                throw new LibrarySubscriberEmailAlreadyUsedException();
+                $exception = new LibrarySubscriberEmailAlreadyUsedException();
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
+                throw $exception;
             }
         }
         $uuid       = ! empty($data['uuid']) ? $data['uuid'] : Uuid::uuid4()->toString();

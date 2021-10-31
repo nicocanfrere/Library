@@ -11,6 +11,7 @@ use Laminas\InputFilter\InputFilterPluginManager;
 use Library\Contract\UpdateBookInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class PutHandlerFactory
 {
@@ -20,7 +21,8 @@ class PutHandlerFactory
         $inputFilter   = $pluginManager->get(BookCreateInputFilter::class);
         $updater       = $container->get(UpdateBookInterface::class);
         $provider      = $container->get(BookDataProvider::class);
+        $logger        = $container->get(LoggerInterface::class);
 
-        return new PutHandler($inputFilter, $updater, $provider);
+        return new PutHandler($inputFilter, $updater, $provider, $logger);
     }
 }

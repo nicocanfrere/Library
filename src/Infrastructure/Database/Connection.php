@@ -7,6 +7,7 @@ namespace Infrastructure\Database;
 use Exception;
 use Infrastructure\Contract\DatabaseConnectionInterface;
 use PDO;
+use Psr\Log\LoggerInterface;
 
 class Connection implements DatabaseConnectionInterface
 {
@@ -17,7 +18,8 @@ class Connection implements DatabaseConnectionInterface
         private string $dsn,
         private string $username,
         private string $password,
-        private ?array $options = []
+        private array $options = [],
+        private ?LoggerInterface $logger = null
     ) {
     }
 
@@ -32,7 +34,12 @@ class Connection implements DatabaseConnectionInterface
 
             return $this->pdo;
         } catch (Exception $exception) {
-            // TODO Log message
+            if ($this->logger) {
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
+            }
             die($exception->getMessage());
         }
     }

@@ -11,12 +11,14 @@ use Library\Contract\SubscriberReturnBookInterface;
 use Library\Exception\BookNotBorrowedBySubscriberException;
 use Library\Exception\BookNotFoundInRegistryException;
 use Library\Exception\LibrarySubscriberNotFoundException;
+use Psr\Log\LoggerInterface;
 
 class SubscriberReturnBook implements SubscriberReturnBookInterface
 {
     public function __construct(
         private LibrarySubscriberRepositoryInterface $subscriberRepository,
-        private BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository
+        private BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -24,14 +26,29 @@ class SubscriberReturnBook implements SubscriberReturnBookInterface
     {
         $subscriber = $this->subscriberRepository->findLibrarySubscriberByUuid($subscriberUuid);
         if (! $subscriber) {
-            throw new LibrarySubscriberNotFoundException();
+            $exception = new LibrarySubscriberNotFoundException();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
+            throw $exception;
         }
         $registry = $this->bookBorrowRegistryRepository->findOneByBookUuid($bookUuid);
         if (! $registry) {
-            throw new BookNotFoundInRegistryException();
+            $exception = new BookNotFoundInRegistryException();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
+            throw $exception;
         }
         if ($registry['subscriber'] !== $subscriber['uuid']) {
-            throw new BookNotBorrowedBySubscriberException();
+            $exception = new BookNotBorrowedBySubscriberException();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
+            throw $exception;
         }
         $registry = BookBorrowRegistry::create(
             $registry['uuid'],

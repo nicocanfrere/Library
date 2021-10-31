@@ -11,16 +11,19 @@ use Library\Exception\LibrarySubscriberNotFoundException;
 use Library\LibrarySubscriberFactory;
 use Library\UseCase\RemoveSubscriber;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class RemoveSubscriberTest extends TestCase
 {
     private LibrarySubscriberRepositoryInterface $repository;
     private LibrarySubscriberFactoryInterface $factory;
+    private LoggerInterface $logger;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(LibrarySubscriberRepositoryInterface::class);
         $this->factory    = $this->createMock(LibrarySubscriberFactoryInterface::class);
+        $this->logger     = $this->createMock(LoggerInterface::class);
     }
 
     /**
@@ -32,7 +35,8 @@ class RemoveSubscriberTest extends TestCase
         $this->expectException(LibrarySubscriberNotFoundException::class);
         $removeSubscriber = new RemoveSubscriber(
             $this->repository,
-            $this->factory
+            $this->factory,
+            $this->logger
         );
         $removeSubscriber->remove('uuid');
     }
@@ -52,7 +56,8 @@ class RemoveSubscriberTest extends TestCase
         $this->repository->method('findLibrarySubscriberByUuid')->willReturn($values);
         $removeSubscriber = new RemoveSubscriber(
             $this->repository,
-            new LibrarySubscriberFactory($this->repository)
+            new LibrarySubscriberFactory($this->repository, $this->logger),
+            $this->logger
         );
         $subscriber       = $removeSubscriber->remove('uuid');
         $this->assertInstanceOf(LibrarySubscriberInterface::class, $subscriber);

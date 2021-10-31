@@ -13,18 +13,21 @@ use Library\Contract\SubscriberBorrowBooksInterface;
 use Library\Exception\LibrarySubscriberNotFoundException;
 use Library\UseCase\SubscriberBorrowBooks;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class SubscriberBorrowBooksTest extends TestCase
 {
     private LibrarySubscriberRepositoryInterface $subscriberRepository;
     private BookRepositoryInterface $bookRepository;
     private BookBorrowRegistryFactoryInterface $registryFactory;
+    private LoggerInterface $logger;
 
     protected function setUp(): void
     {
         $this->subscriberRepository = $this->createMock(LibrarySubscriberRepositoryInterface::class);
         $this->bookRepository       = $this->createMock(BookRepositoryInterface::class);
         $this->registryFactory      = $this->createMock(BookBorrowRegistryFactoryInterface::class);
+        $this->logger               = $this->createMock(LoggerInterface::class);
     }
 
     /**
@@ -36,7 +39,8 @@ class SubscriberBorrowBooksTest extends TestCase
         $subscriberBorrowBooks = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,
-            $this->registryFactory
+            $this->registryFactory,
+            $this->logger
         );
         $this->expectException(LibrarySubscriberNotFoundException::class);
         $subscriberBorrowBooks->borrow('subscriber-uuid', []);
@@ -52,7 +56,8 @@ class SubscriberBorrowBooksTest extends TestCase
         $subscriberBorrowBooks = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,
-            $this->registryFactory
+            $this->registryFactory,
+            $this->logger
         );
         $result                = $subscriberBorrowBooks->borrow('subscriber-uuid', ['book-uuid']);
         $this->assertArrayHasKey(SubscriberBorrowBooksInterface::BORROWED_BOOKS, $result);
@@ -69,11 +74,12 @@ class SubscriberBorrowBooksTest extends TestCase
         $this->bookRepository->method('findBookByUuid')->willReturn([true]);
         $bookBorrowRegistryRepository = $this->createMock(BookBorrowRegistryRepositoryInterface::class);
         $bookBorrowRegistryRepository->method('bookCanBeBorrowed')->willReturn(false);
-        $bookBorrowRegistryFactory = new BookBorrowRegistryFactory($bookBorrowRegistryRepository);
+        $bookBorrowRegistryFactory = new BookBorrowRegistryFactory($bookBorrowRegistryRepository, $this->logger);
         $subscriberBorrowBooks     = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,
-            $bookBorrowRegistryFactory
+            $bookBorrowRegistryFactory,
+            $this->logger
         );
         $result                    = $subscriberBorrowBooks->borrow('subscriber-uuid', ['book-uuid']);
         $this->assertArrayHasKey(SubscriberBorrowBooksInterface::NOT_BORROWABLE_BOOKS, $result);
@@ -91,7 +97,8 @@ class SubscriberBorrowBooksTest extends TestCase
         $subscriberBorrowBooks = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,
-            $this->registryFactory
+            $this->registryFactory,
+            $this->logger
         );
         $result                = $subscriberBorrowBooks->borrow('subscriber-uuid', ['book-uuid']);
         $this->assertArrayHasKey(SubscriberBorrowBooksInterface::UNKNOWN_BOOKS, $result);

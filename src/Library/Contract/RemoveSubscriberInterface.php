@@ -6,4 +6,5 @@ namespace Library\Contract;
 
 interface RemoveSubscriberInterface
 {
+    public function remove(string $uuid): LibrarySubscriberInterface;
 }

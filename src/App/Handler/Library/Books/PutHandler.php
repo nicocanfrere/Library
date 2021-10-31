@@ -13,13 +13,15 @@ use Library\Exception\BookNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class PutHandler implements RequestHandlerInterface
 {
     public function __construct(
         private InputFilterInterface $inputFilter,
         private UpdateBookInterface $updateBook,
-        private DataProviderInterface $bookDataProvider
+        private DataProviderInterface $bookDataProvider,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -36,10 +38,16 @@ class PutHandler implements RequestHandlerInterface
 
                 return new JsonResponse($book, 200);
             } catch (BookNotFoundException $exception) {
-                //TODO log
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
                 return new JsonResponse(['error' => ['message' => $exception->getMessage()]], 404);
             } catch (Exception $exception) {
-                //TODO log
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
                 return new JsonResponse([], 500);
             }
         }

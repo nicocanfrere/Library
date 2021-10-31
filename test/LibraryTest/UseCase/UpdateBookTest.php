@@ -9,14 +9,17 @@ use Library\Contract\BookRepositoryInterface;
 use Library\Exception\BookNotFoundException;
 use Library\UseCase\UpdateBook;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class UpdateBookTest extends TestCase
 {
     private BookRepositoryInterface $bookRepository;
+    private LoggerInterface $logger;
 
     protected function setUp(): void
     {
         $this->bookRepository = $this->createMock(BookRepositoryInterface::class);
+        $this->logger         = $this->createMock(LoggerInterface::class);
     }
 
     /**
@@ -32,7 +35,7 @@ class UpdateBookTest extends TestCase
             'year_of_publication' => 2020,
         ];
         $this->bookRepository->method('findBookByUuid')->willReturn($book);
-        $bookUpdater = new UpdateBook($this->bookRepository);
+        $bookUpdater = new UpdateBook($this->bookRepository, $this->logger);
         $updatedBook = $bookUpdater->update(
             'uuid',
             $values
@@ -52,7 +55,7 @@ class UpdateBookTest extends TestCase
         $book   = ['uuid' => 'uuid', 'title' => 'title', 'author_name' => 'author_name', 'year_of_publication' => 2021];
         $values = ['uuid' => 'uuid', 'title' => '', 'author_name' => '', 'year_of_publication' => 2020];
         $this->bookRepository->method('findBookByUuid')->willReturn($book);
-        $bookUpdater = new UpdateBook($this->bookRepository);
+        $bookUpdater = new UpdateBook($this->bookRepository, $this->logger);
         $updatedBook = $bookUpdater->update(
             'uuid',
             $values
@@ -71,7 +74,7 @@ class UpdateBookTest extends TestCase
     {
         $values = ['uuid' => 'uuid', 'title' => '', 'author_name' => '', 'year_of_publication' => 2020];
         $this->bookRepository->method('findBookByUuid')->willReturn(null);
-        $bookUpdater = new UpdateBook($this->bookRepository);
+        $bookUpdater = new UpdateBook($this->bookRepository, $this->logger);
         $this->expectException(BookNotFoundException::class);
         $updatedBook = $bookUpdater->update(
             'uuid',

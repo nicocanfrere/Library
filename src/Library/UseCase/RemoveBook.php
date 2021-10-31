@@ -9,12 +9,14 @@ use Library\Contract\BookInterface;
 use Library\Contract\BookRepositoryInterface;
 use Library\Contract\RemoveBookInterface;
 use Library\Exception\BookNotFoundException;
+use Psr\Log\LoggerInterface;
 
 class RemoveBook implements RemoveBookInterface
 {
     public function __construct(
         private BookRepositoryInterface $bookRepository,
-        private BookFactoryInterface $bookFactory
+        private BookFactoryInterface $bookFactory,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -22,7 +24,12 @@ class RemoveBook implements RemoveBookInterface
     {
         $book = $this->bookRepository->findBookByUuid($uuid);
         if (! $book) {
-            throw new BookNotFoundException();
+            $exception = new BookNotFoundException();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
+            throw $exception;
         }
         $book = $this->bookFactory->create($book);
         $this->bookRepository->unregisterBook($book);

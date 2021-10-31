@@ -7,6 +7,7 @@ namespace InfrastructureTest\Contract;
 use Infrastructure\Contract\AbstractRepository;
 use Infrastructure\Contract\DatabaseConnectionInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class AbstractMysqlRepositoryTest extends TestCase
 {
@@ -15,7 +16,8 @@ class AbstractMysqlRepositoryTest extends TestCase
     protected function setUp(): void
     {
         $connection     = $this->createMock(DatabaseConnectionInterface::class);
-        $this->testable = new TestableMysqlRepository($connection);
+        $logger         = $this->createMock(LoggerInterface::class);
+        $this->testable = new TestableMysqlRepository($connection, $logger);
     }
 
     /**

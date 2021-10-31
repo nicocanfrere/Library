@@ -10,13 +10,15 @@ use Library\Contract\BookRepositoryInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Contract\SubscriberBorrowBooksInterface;
 use Library\Exception\LibrarySubscriberNotFoundException;
+use Psr\Log\LoggerInterface;
 
 class SubscriberBorrowBooks implements SubscriberBorrowBooksInterface
 {
     public function __construct(
         private LibrarySubscriberRepositoryInterface $subscriberRepository,
         private BookRepositoryInterface $bookRepository,
-        private BookBorrowRegistryFactoryInterface $bookBorrowRegistryFactory
+        private BookBorrowRegistryFactoryInterface $bookBorrowRegistryFactory,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -24,7 +26,12 @@ class SubscriberBorrowBooks implements SubscriberBorrowBooksInterface
     {
         $subscriber = $this->subscriberRepository->findLibrarySubscriberByUuid($subscriberUuid);
         if (! $subscriber) {
-            throw new LibrarySubscriberNotFoundException();
+            $exception = new LibrarySubscriberNotFoundException();
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
+            throw $exception;
         }
         $notExistingBooks        = [];
         $booksAlreadyBorrowed    = [];
@@ -38,7 +45,10 @@ class SubscriberBorrowBooks implements SubscriberBorrowBooksInterface
                     );
                     $booksNotAlreadyBorrowed[] = $bookUuid;
                 } catch (Exception $exception) {
-                    //var_dump($exception->getMessage());die;
+                    $this->logger->critical(
+                        __METHOD__,
+                        ['error' => $exception->getMessage()]
+                    );
                     $booksAlreadyBorrowed[] = $bookUuid;
                 }
             } else {

@@ -12,13 +12,15 @@ use Library\Contract\BookFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class PostHandler implements RequestHandlerInterface
 {
     public function __construct(
         private InputFilterInterface $inputFilter,
         private BookFactoryInterface $bookFactory,
-        private DataProviderInterface $bookDataProvider
+        private DataProviderInterface $bookDataProvider,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -35,7 +37,10 @@ class PostHandler implements RequestHandlerInterface
 
                 return new JsonResponse($book, 201);
             } catch (Exception $exception) {
-                //TODO log
+                $this->logger->critical(
+                    __METHOD__,
+                    ['error' => $exception->getMessage()]
+                );
                 return new JsonResponse([], 500);
             }
         }

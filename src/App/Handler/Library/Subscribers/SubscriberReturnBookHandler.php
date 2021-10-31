@@ -13,11 +13,13 @@ use Library\Exception\LibrarySubscriberNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class SubscriberReturnBookHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private SubscriberReturnBookInterface $subscriberReturnBook
+        private SubscriberReturnBookInterface $subscriberReturnBook,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -34,10 +36,16 @@ class SubscriberReturnBookHandler implements RequestHandlerInterface
             BookNotFoundInRegistryException |
             BookNotBorrowedBySubscriberException $exception
         ) {
-            //TODO log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
             return new JsonResponse(['error' => $exception->getMessage()], 404);
         } catch (Exception $exception) {
-            //TODO log
+            $this->logger->critical(
+                __METHOD__,
+                ['error' => $exception->getMessage()]
+            );
             return new JsonResponse(['error' => $exception->getMessage()], 500);
         }
     }
