@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Handler\Library\Subscribers;
 
+use Exception;
 use Laminas\Diactoros\Response\JsonResponse;
 use Library\Contract\RemoveSubscriberInterface;
 use Library\Exception\LibrarySubscriberNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use function time;
 
 class DeleteHandler implements RequestHandlerInterface
 {
@@ -30,7 +29,7 @@ class DeleteHandler implements RequestHandlerInterface
         } catch (LibrarySubscriberNotFoundException $exception) {
             //TODO log
             return new JsonResponse(['error' => ['message' => $exception->getMessage()]], 404);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             //TODO log
             return new JsonResponse(['error' => $exception->getMessage()], 500);
         }
