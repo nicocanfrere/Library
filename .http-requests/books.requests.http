@@ -1,0 +1,69 @@
+### !!! change the uuid with an existing one
+GET http://localhost:9999/api/library/books/18ad8511-af26-4327-ab2d-b046269185ff
+Accept: application/json
+
+###
+GET http://localhost:9999/api/library/books
+Accept: application/json
+
+### Valid data
+POST http://localhost:9999/api/library/books
+Content-Type: application/json
+
+{
+    "title": "Api Book, by examples",
+    "author_name": "John Doe",
+    "year_of_publication": 2022
+}
+
+### Invalid data
+POST http://localhost:9999/api/library/books
+Content-Type: application/json
+
+{
+    "title": "Api Book",
+    "author_name": "John Doe",
+    "year_of_publication": "invalid"
+}
+
+###  !!! change the uuid with an existing one
+PATCH http://localhost:9999/api/library/books/18ad8511-af26-4327-ab2d-b046269185ff
+Content-Type: application/json
+
+{
+    "uuid": "18ad8511-af26-4327-ab2d-b046269185ff",
+    "title": "Api Book Volume 2",
+    "author_name": "John Doe",
+    "year_of_publication": 2022
+}
+
+### invalid put  !!! change the uuid with an existing one
+PUT http://localhost:9999/api/library/books/cfdd4fd5-1378-4b73-a9fd-00aeff713ffc
+Content-Type: application/json
+
+{
+    "uuid": "18ad8511-af26-4327-ab2d-b046269185ff",
+    "author_name": "John Doe",
+    "year_of_publication": 2022
+}
+
+### !!! change the uuid with an existing one
+PUT http://localhost:9999/api/library/books/cfdd4fd5-1378-4b73-a9fd-00aeff713ffc
+Content-Type: application/json
+
+{
+    "uuid": "cfdd4fd5-1378-4b73-a9fd-00aeff713ffc",
+    "title": "Api Book Volume 3",
+    "author_name": "John Doe",
+    "year_of_publication": 2023
+}
+
+### !!! change the uuid with an existing one
+DELETE http://localhost:9999/api/library/books/382b889e-1cc3-4512-a9fd-609a187f77b8
+Accept: application/json
+
+### book not exists => 404
+DELETE http://localhost:9999/api/library/books/11111111-aaaa-2222-bbbb-3333333333
+Accept: application/json
+
+
