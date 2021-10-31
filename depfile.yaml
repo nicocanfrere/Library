@@ -1,0 +1,59 @@
+paths:
+  - ./src
+
+layers:
+  -
+    name: Psr
+    collectors:
+      -
+        type: classNameRegex
+        regex: '#^Psr\\.*#'
+  -
+    name: Ramsey
+    collectors:
+      -
+        type: classNameRegex
+        regex: '#^Ramsey\\.*#'
+  -
+    name: Laminas
+    collectors:
+      -
+        type: classNameRegex
+        regex: '#^Laminas\\.*#'
+  -
+    name: Mezzio
+    collectors:
+      -
+        type: classNameRegex
+        regex: '#^Mezzio\\.*#'
+  -
+    name: Library
+    collectors:
+      -
+        type: classNameRegex
+        regex: '#^Library\\.*#'
+  -
+    name: Infrastructure
+    collectors:
+      -
+        type: classNameRegex
+        regex: '#^Infrastructure\\.*#'
+  -
+    name: App
+    collectors:
+      -
+        type: classNameRegex
+        regex: '#^App\\.*#'
+ruleset:
+  App:
+    - Psr
+    - Library
+    - Infrastructure
+    - Laminas
+    - Mezzio
+  Infrastructure:
+    - Psr
+    - Library
+  Library:
+    - Psr
+    - Ramsey

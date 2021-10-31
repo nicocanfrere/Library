@@ -1,172 +1,166 @@
-# Mezzio Skeleton and Installer
+# Library
 
-[![Build Status](https://github.com/mezzio/mezzio-skeleton/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/mezzio/mezzio-skeleton/actions/workflows/continuous-integration.yml)
+- [Requirements](#requirements)
+- [Install](#install)
+- [Docker](#docker)
+  - [What's inside?](#whats-inside)
+  - [Start Docker](#start-docker)
+- [Install database](#install-database)
+- [Access application](#access-application)
+  - [Routes](#routes)
+    - [Books](#books)
+    - [Library subscribers aka users](#library-subscribers-aka-users)
+- [Run PHPUnit tests](#run-phpunit-tests)
+- [Other tools - static analysis](#other-tools---static-analysis)
+- [Project directory structure](#project-directory-structure)
+- [Enjoy !](#----enjoy----)
 
-*Begin developing PSR-15 middleware applications in seconds!*
+## Requirements
 
-[mezzio](https://github.com/mezzio/mezzio) builds on
-[laminas-stratigility](https://github.com/laminas/laminas-stratigility) to
-provide a minimalist PSR-15 middleware framework for PHP with routing, DI
-container, optional templating, and optional error handling capabilities.
+- [git](https://git-scm.com/doc)
+- [Docker](https://docs.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
+- [PHP 8](https://www.php.net/docs.php)
+- [composer](https://getcomposer.org/)
+- [Make](https://www.gnu.org/software/make/manual/make.html) to run Makefile (optional)
 
-This installer will setup a skeleton application based on mezzio by
-choosing optional packages based on user input as demonstrated in the following
-screenshot:
+## Install
 
-![screenshot-installer](https://user-images.githubusercontent.com/1011217/90332191-55d32200-dfbb-11ea-80c0-27a07ef5691a.png)
+Clone the repository, in cli do:
+```bash
+git clone
+```
+In project root directory, install vendors with composer, in cli do:
+```bash
+composer install
+```
+Rename config/autoload/local.php.dist to config/autoload/local.php
 
-The user selected packages are saved into `composer.json` so that everyone else
-working on the project have the same packages installed. Configuration files and
-templates are prepared for first use. The installer command is removed from
-`composer.json` after setup succeeded, and all installer related files are
-removed.
+## Docker
 
-## Getting Started
+### What's inside?
 
-Start your new Mezzio project with composer:
+Three containers will run:
+- library_database: [postgres:13](https://hub.docker.com/_/postgres)
+- library_php: [PHP8](https://hub.docker.com/_/php). Custom image, based on php:8.0.10-fpm (see .local/docker/php/Dockerfile) ***!!! Not safe, do not use in production !!!***
+- library_nginx: [nginx:1.19](https://hub.docker.com/_/nginx)
+
+### Start Docker
+
+With make:
 
 ```bash
-$ composer create-project mezzio/mezzio-skeleton <project-path>
+make up
 ```
 
-After choosing and installing the packages you want, go to the
-`<project-path>` and start PHP's built-in web server to verify installation:
+Without Make:
+
+```shell
+docker-compose -f .docker/docker-compose.yml up
+```
+
+## Install database
+
+Next, create the database schema with [Phinx](https://phinx.org/) migrations, in cli do:
+```bash
+vendor/bin/phinx migrate
+```
+Now, fill tables with fake data (optional), in cli do:
+```bash
+vendor/bin/phinx seed:run
+```
+
+## Access application
+
+Access the application in your browser:
+```text
+http://127.0.0.1:9999
+```
+Or with Curl request, or if you have PhpStorm, you will find "http" files in .http-requests directory 
+
+### Routes
+
+#### Books
+<pre style="font-size: 16px;">
+<code>
+- List all (no pagination...):  GET     http://127.0.0.1:9999/api/library/books
+- Get one by uuid:              GET     http://127.0.0.1:9999/api/library/books/&lt;book_uuid&gt;
+- Create new book:              POST    http://127.0.0.1:9999/api/library/books
+- Partial update book:          PATCH   http://127.0.0.1:9999/api/library/books/&lt;book_uuid&gt;
+- Full update book:             PUT     http://127.0.0.1:9999/api/library/books/&lt;book_uuid&gt;
+- Delete book:                  DELETE  http://127.0.0.1:9999/api/library/books/&lt;book_uuid&gt;
+</code>
+</pre>
+#### Library subscribers aka users
+<pre style="font-size: 16px;">
+<code>
+- List all (no pagination...):    GET     http://127.0.0.1:9999/api/library/subscribers
+- Get one by uuid:                GET     http://127.0.0.1:9999/api/library/subscribers/&lt;subscriber_uuid&gt;
+- Create new subscriber:          POST    http://127.0.0.1:9999/api/library/subscribers
+- Partial update subscriber:      PATCH   http://127.0.0.1:9999/api/library/subscribers/&lt;subscriber_uuid&gt;
+- Full update subscriber:         PUT     http://127.0.0.1:9999/api/library/subscribers/&lt;subscriber_uuid&gt;
+- Delete subscriber:              DELETE  http://127.0.0.1:9999/api/library/subscribers/&lt;subscriber_uuid&gt;
+- Subscriber borrow books:        POST    http://127.0.0.1:9999/api/library/subscribers/&lt;subscriber_uuid&gt;/books
+- Subscriber bring back a book:   DELETE  http://127.0.0.1:9999/api/library/subscribers/&lt;subscriber_uuid&gt;/books/&lt;book_uuid&gt;
+</code>
+</pre>
+## Run PHPUnit tests
+
+With make:
 
 ```bash
-$ composer run --timeout=0 serve
+make punit
 ```
 
-You can then browse to http://localhost:8080.
+Without Make:
 
-> ### Linux users
->
-> On PHP versions prior to 7.1.14 and 7.2.2, this command might not work as
-> expected due to a bug in PHP that only affects linux environments. In such
-> scenarios, you will need to start the [built-in web
-> server](http://php.net/manual/en/features.commandline.webserver.php) yourself,
-> using the following command:
->
-> ```bash
-> $ php -S 0.0.0.0:8080 -t public/ public/index.php
-> ```
-
-> ### Setting a timeout
->
-> Composer commands time out after 300 seconds (5 minutes). On Linux-based
-> systems, the `php -S` command that `composer serve` spawns continues running
-> as a background process, but on other systems halts when the timeout occurs.
->
-> As such, we recommend running the `serve` script using a timeout. This can
-> be done by using `composer run` to execute the `serve` script, with a
-> `--timeout` option. When set to `0`, as in the previous example, no timeout
-> will be used, and it will run until you cancel the process (usually via
-> `Ctrl-C`). Alternately, you can specify a finite timeout; as an example,
-> the following will extend the timeout to a full day:
->
-> ```bash
-> $ composer run --timeout=86400 serve
-> ```
-
-## Installing alternative packages
-
-There is a feature to install alternative packages: Instead of entering one of
-the selection **you can actually type the package name and version**.
-
-> ```
->   Which template engine do you want to use?
->   [1] Plates
->   [2] Twig
->   [3] zend-view installs zend-servicemanager
->   [n] None of the above
->   Make your selection or type a composer package name and version (n): infw/pug:0.1
->   - Searching for infw/pug:0.1
->   - Adding package infw/pug (0.1)
-> ```
-
-That feature allows you to install any alternative package you want. It has its limitations though:
-
-* The alternative package must follow this format `namespace/package:1.0`. It needs the correct version.
-* Templates are not copied, but the ConfigProvider can be configured in such way that it uses the
-  default templates directly from the package itself.
-* This doesn't work for containers as the container.php file needs to be copied.
-
-## Troubleshooting
-
-If the installer fails during the ``composer create-project`` phase, please go
-through the following list before opening a new issue. Most issues we have seen
-so far can be solved by `self-update` and `clear-cache`.
-
-1. Be sure to work with the latest version of composer by running `composer self-update`.
-2. Try clearing Composer's cache by running `composer clear-cache`.
-
-If neither of the above help, you might face more serious issues:
-
-- Info about the [zlib_decode error](https://github.com/composer/composer/issues/4121).
-- Info and solutions for [composer degraded mode](https://getcomposer.org/doc/articles/troubleshooting.md#degraded-mode).
-
-## Application Development Mode Tool
-
-This skeleton comes with [laminas-development-mode](https://github.com/laminas/laminas-development-mode).
-It provides a composer script to allow you to enable and disable development mode.
-
-### To enable development mode
-
-**Note:** Do NOT run development mode on your production server!
-
-```bash
-$ composer development-enable
+```shell
+vendor/bin/phpunit
 ```
 
-**Note:** Enabling development mode will also clear your configuration cache, to
-allow safely updating dependencies and ensuring any new configuration is picked
-up by your application.
+## Other tools - static analysis
 
-### To disable development mode
+- [PHP Code Sniffer](https://github.com/squizlabs/PHP_CodeSniffer) (make csf or vendor/bin/phpcbf)
+- [PHPStan](https://github.com/phpstan/phpstan) (make stan or vendor/bin/phpstan analyse)
+- [deptrac](https://github.com/qossmic/deptrac) (make deptrac or vendor/bin/deptrac)
 
-```bash
-$ composer development-disable
-```
+## Project directory structure
+<pre style="font-size: 16px;">
+Library (root directory)
+|
+|_ .http-requests (files to run http calls to api)
+|   |_ ... files
+|
+|_ .local (docker local env)
+|   |_ docker
+|   |_ volumes
+|   |_ docker-compose.yml
+|
+|_ bin
+|
+|_ config (App configuration)
+|   |_ ...files
+|
+|_ data (cache, ...)
+|   |_ ...files
+|
+|_ db (Phinx migrations and seeds)
+|   |_ ...files
+|
+|_ public (Document root directory)
+|   |_ index.php (App entry point)
+|
+|_ src (Application main code base)
+|   |_ App (Mezzio App)
+|   |_ Infrastructure (Database...)
+|   |_ Library (Core)
+|
+|_ test (Tests directory)
+|   |_ ...files
+|
+|_ vendor (Vendor directory)
+|   |_ All packages ...
+|
+|_ All files for composer, static analysis tools, etc...
+</pre>
 
-### Development mode status
-
-```bash
-$ composer development-status
-```
-
-## Configuration caching
-
-By default, the skeleton will create a configuration cache in
-`data/config-cache.php`. When in development mode, the configuration cache is
-disabled, and switching in and out of development mode will remove the
-configuration cache.
-
-You may need to clear the configuration cache in production when deploying if
-you deploy to the same directory. You may do so using the following:
-
-```bash
-$ composer clear-config-cache
-```
-
-You may also change the location of the configuration cache itself by editing
-the `config/config.php` file and changing the `config_cache_path` entry of the
-local `$cacheConfig` variable.
-
-## Skeleton Development
-
-This section applies only if you cloned this repo with `git clone`, not when you
-installed mezzio with `composer create-project ...`.
-
-If you want to run tests against the installer, you need to clone this repo and
-setup all dependencies with composer.  Make sure you **prevent composer running
-scripts** with `--no-scripts`, otherwise it will remove the installer and all
-tests.
-
-```bash
-$ composer update --no-scripts
-$ composer test
-```
-
-Please note that the installer tests remove installed config files and templates
-before and after running the tests.
-
-Before contributing read [the contributing guide](https://github.com/mezzio/.github/blob/master/CONTRIBUTING.md).
+## !!! *** :-) ENJOY :-) *** !!!
