@@ -10,13 +10,13 @@ interface BookBorrowRegistryInterface
 
     public static function create(
         string $uuid,
-        LibrarySubscriberInterface $subscriber,
-        BookInterface $book
+        string $subscriber,
+        string $book
     ): BookBorrowRegistryInterface;
 
     public function getUuid(): ?string;
 
-    public function getSubscriber(): ?LibrarySubscriberInterface;
+    public function getSubscriber(): ?string;
 
-    public function getBook(): ?BookInterface;
+    public function getBook(): ?string;
 }

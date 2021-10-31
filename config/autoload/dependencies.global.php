@@ -38,6 +38,10 @@ return [
             => App\Factory\RemoveSubscriberFactory::class,
             Library\Contract\LibrarySubscriberFactoryInterface::class
             => App\Factory\LibrarySubscriberFactoryFactory::class,
+            Library\Contract\SubscriberBorrowBooksInterface::class
+            => App\Factory\SubscriberBorrowBooksFactory::class,
+            Library\Contract\BookBorrowRegistryFactoryInterface::class
+            => App\Factory\BookBorrowRegistryFactoryFactory::class,
         ],
     ],
 ];

@@ -6,6 +6,7 @@ namespace Infrastructure\Library\Repository;
 
 use Infrastructure\Contract\AbstractRepository;
 use Library\BookBorrowRegistry;
+use Library\Contract\BookBorrowRegistryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 
 class BookBorrowRegistryRepository extends AbstractRepository implements BookBorrowRegistryRepositoryInterface
@@ -35,13 +36,28 @@ class BookBorrowRegistryRepository extends AbstractRepository implements BookBor
         ],
     ];
 
-    public function borrowABook(string $subscriberUuid, string $bookUuid): void
+    public function borrowABook(BookBorrowRegistryInterface $registry): void
     {
-        // TODO: Implement borrowABook() method.
+        $this->insert(self::$metadata, $registry);
     }
 
     public function returnABook(string $subscriberUuid, string $bookUuid): void
     {
         // TODO: Implement returnABook() method.
+    }
+
+    public function bookCanBeBorrowed(string $bookUuid): bool
+    {
+        $conditions = [
+            [
+                'condition'  => 'book = :book',
+                'parameters' => [
+                    'book' => $bookUuid,
+                ],
+            ],
+        ];
+        $row        = $this->selectSingleWhere(self::$metadata, $conditions);
+
+        return empty($row);
     }
 }

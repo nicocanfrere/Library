@@ -55,3 +55,27 @@ Content-Type: application/json
 ### !!! change the uuid with an existing one
 DELETE http://localhost:9999/api/library/subscribers/9c68e357-484f-4127-a159-84c0a9e5077f
 Accept: application/json
+
+###
+POST http://localhost:9999/api/library/subscribers/0c44d2b7-b4ba-42de-bd24-81bb2577fbca/books
+Content-Type: application/json
+
+{
+    "books": [
+        "36af30ca-319c-4b63-b958-339d30dea3dd",
+        "18ad8511-af26-4327-ab2d-b046269185ff",
+        "18ad8511-af26-4327-ab2d-b04626918500"
+    ]
+}
+
+###
+POST http://localhost:9999/api/library/subscribers/109e422a-bf7d-4ce1-9a26-1d6df6961982/books
+Content-Type: application/json
+
+{
+    "books": [
+        "36af30ca-319c-4b63-b958-339d30dea3dd",
+        "18ad8511-af26-4327-ab2d-b046269185ff",
+        "cfdd4fd5-1378-4b73-a9fd-00aeff713ffc"
+    ]
+}

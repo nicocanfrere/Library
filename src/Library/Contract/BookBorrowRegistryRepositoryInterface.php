@@ -6,7 +6,9 @@ namespace Library\Contract;
 
 interface BookBorrowRegistryRepositoryInterface
 {
-    public function borrowABook(string $subscriberUuid, string $bookUuid): void;
+    public function borrowABook(BookBorrowRegistryInterface $registry): void;
 
     public function returnABook(string $subscriberUuid, string $bookUuid): void;
+
+    public function bookCanBeBorrowed(string $bookUuid): bool;
 }

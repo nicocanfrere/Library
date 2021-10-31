@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace Library;
 
 use Library\Contract\BookBorrowRegistryInterface;
-use Library\Contract\BookInterface;
-use Library\Contract\LibrarySubscriberInterface;
 
 class BookBorrowRegistry implements BookBorrowRegistryInterface
 {
-    private ?string $uuid                           = null;
-    private ?LibrarySubscriberInterface $subscriber = null;
-    private ?BookInterface $book                    = null;
+    private ?string $uuid       = null;
+    private ?string $subscriber = null;
+    private ?string $book       = null;
 
     public function __construct()
     {
@@ -20,8 +18,8 @@ class BookBorrowRegistry implements BookBorrowRegistryInterface
 
     public static function create(
         string $uuid,
-        LibrarySubscriberInterface $subscriber,
-        BookInterface $book
+        string $subscriber,
+        string $book
     ): BookBorrowRegistryInterface {
         $registry             = new static();
         $registry->uuid       = $uuid;
@@ -36,12 +34,12 @@ class BookBorrowRegistry implements BookBorrowRegistryInterface
         return $this->uuid;
     }
 
-    public function getSubscriber(): ?LibrarySubscriberInterface
+    public function getSubscriber(): ?string
     {
         return $this->subscriber;
     }
 
-    public function getBook(): ?BookInterface
+    public function getBook(): ?string
     {
         return $this->book;
     }

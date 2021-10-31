@@ -61,6 +61,8 @@ class ConfigProvider
                 => Handler\Library\Subscribers\Factory\PutHandlerFactory::class,
                 Handler\Library\Subscribers\SingleHandler::class
                 => Handler\Library\Subscribers\Factory\SingleHandlerFactory::class,
+                Handler\Library\Subscribers\BorrowBookHandler::class
+                => Handler\Library\Subscribers\Factory\BorrowBookHandlerFactory::class,
                 DataProvider\LibrarySubscriberDataProvider::class
                 => DataProvider\LibrarySubscriberDataProviderFactory::class,
                 DataProvider\BookDataProvider::class
