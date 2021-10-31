@@ -6,37 +6,40 @@ use Mezzio\Application;
 use Mezzio\MiddlewareFactory;
 use Psr\Container\ContainerInterface;
 
-/**
- * FastRoute route configuration
- *
- * @see https://github.com/nikic/FastRoute
- *
- * Setup routes with a single request method:
- *
- * $app->get('/', App\Handler\HomePageHandler::class, 'home');
- * $app->post('/album', App\Handler\AlbumCreateHandler::class, 'album.create');
- * $app->put('/album/{id:\d+}', App\Handler\AlbumUpdateHandler::class, 'album.put');
- * $app->patch('/album/{id:\d+}', App\Handler\AlbumUpdateHandler::class, 'album.patch');
- * $app->delete('/album/{id:\d+}', App\Handler\AlbumDeleteHandler::class, 'album.delete');
- *
- * Or with multiple request methods:
- *
- * $app->route('/contact', App\Handler\ContactHandler::class, ['GET', 'POST', ...], 'contact');
- *
- * Or handling all request methods:
- *
- * $app->route('/contact', App\Handler\ContactHandler::class)->setName('contact');
- *
- * or:
- *
- * $app->route(
- *     '/contact',
- *     App\Handler\ContactHandler::class,
- *     Mezzio\Router\Route::HTTP_METHOD_ANY,
- *     'contact'
- * );
- */
-
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    $app->get('/', App\Handler\IndexHandler::class, 'index');
+
+    /* Library Subscribers Management */
+    $app->get('/api/library/subscribers', App\Handler\Library\Subscribers\ListHandler::class, 'subscribers.list');
+    $app->get(
+        '/api/library/subscribers/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}',
+        [
+            App\Handler\Library\Subscribers\SingleHandler::class
+        ],
+        'subscribers.get'
+    );
+    $app->post('/api/library/subscribers', App\Handler\Library\Subscribers\PostHandler::class, 'subscribers.create');
+    $app->patch('/api/library/subscribers/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}', App\Handler\Library\Subscribers\PatchHandler::class, 'subscribers.patch');
+    $app->put('/api/library/subscribers/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}', App\Handler\Library\Subscribers\PutHandler::class, 'subscribers.put');
+    $app->delete('/api/library/subscribers/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}', App\Handler\Library\Subscribers\DeleteHandler::class, 'subscribers.delete');
+
+    $app->post(
+        '/api/library/subscribers/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}/books',
+        App\Handler\Library\Subscribers\BorrowBookHandler::class,
+        'subscribers.borrow_books'
+    );
+    $app->delete(
+        '/api/library/subscribers/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}/books/{bookUuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}',
+        App\Handler\Library\Subscribers\BringBackBookHandler::class,
+        'subscribers.bring_back_book'
+    );
+
+
+
+    /* Library Books Management */
+    $app->get('/api/library/books', App\Handler\Library\Books\ListHandler::class, 'books.list');
+    $app->get('/api/library/books/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}', App\Handler\Library\Books\SingleHandler::class, 'books.get');
+    $app->post('/api/library/books', App\Handler\Library\Books\PostHandler::class, 'books.create');
+    $app->patch('/api/library/books/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}', App\Handler\Library\Books\PatchHandler::class, 'books.patch');
+    $app->put('/api/library/books/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}', App\Handler\Library\Books\PutHandler::class, 'books.put');
+    $app->delete('/api/library/books/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}', App\Handler\Library\Books\DeleteHandler::class, 'books.delete');
 };
