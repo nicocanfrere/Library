@@ -29,8 +29,8 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     );
     $app->delete(
         '/api/library/subscribers/{uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}/books/{bookUuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}',
-        App\Handler\Library\Subscribers\BringBackBookHandler::class,
-        'subscribers.bring_back_book'
+        App\Handler\Library\Subscribers\SubscriberReturnBookHandler::class,
+        'subscribers.return_book'
     );
 
 

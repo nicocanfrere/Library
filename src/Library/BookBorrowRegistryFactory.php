@@ -23,7 +23,7 @@ class BookBorrowRegistryFactory implements BookBorrowRegistryFactoryInterface
         if (! $canBeBorrowed) {
             throw new BookAlreadyBorrowedException();
         }
-        $uuid     = !empty($data['uuid']) ? $data['uuid'] : Uuid::uuid4()->toString();
+        $uuid     = ! empty($data['uuid']) ? $data['uuid'] : Uuid::uuid4()->toString();
         $registry = BookBorrowRegistry::create(
             $uuid,
             $data['subscriber_uuid'],

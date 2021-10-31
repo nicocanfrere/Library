@@ -40,6 +40,8 @@ return [
             => App\Factory\LibrarySubscriberFactoryFactory::class,
             Library\Contract\SubscriberBorrowBooksInterface::class
             => App\Factory\SubscriberBorrowBooksFactory::class,
+            Library\Contract\SubscriberReturnBookInterface::class
+            => App\Factory\SubscriberReturnBookFactory::class,
             Library\Contract\BookBorrowRegistryFactoryInterface::class
             => App\Factory\BookBorrowRegistryFactoryFactory::class,
         ],

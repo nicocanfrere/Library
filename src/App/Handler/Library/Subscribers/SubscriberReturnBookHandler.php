@@ -6,28 +6,34 @@ namespace App\Handler\Library\Subscribers;
 
 use Exception;
 use Laminas\Diactoros\Response\JsonResponse;
-use Library\Contract\SubscriberBorrowBooksInterface;
+use Library\Contract\SubscriberReturnBookInterface;
+use Library\Exception\BookNotBorrowedBySubscriberException;
+use Library\Exception\BookNotFoundInRegistryException;
 use Library\Exception\LibrarySubscriberNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class BorrowBookHandler implements RequestHandlerInterface
+class SubscriberReturnBookHandler implements RequestHandlerInterface
 {
     public function __construct(
-        private SubscriberBorrowBooksInterface $subscriberBorrowBooks
+        private SubscriberReturnBookInterface $subscriberReturnBook
     ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $data           = $request->getParsedBody();
-        $subscriberUuid = $request->getAttribute('uuid');
         try {
-            $result = $this->subscriberBorrowBooks->borrow($subscriberUuid, $data['books']);
-
+            $result = $this->subscriberReturnBook->returnBook(
+                $request->getAttribute('uuid'),
+                $request->getAttribute('bookUuid')
+            );
             return new JsonResponse($result);
-        } catch (LibrarySubscriberNotFoundException $exception) {
+        } catch (
+            LibrarySubscriberNotFoundException |
+            BookNotFoundInRegistryException |
+            BookNotBorrowedBySubscriberException $exception
+        ) {
             //TODO log
             return new JsonResponse(['error' => $exception->getMessage()], 404);
         } catch (Exception $exception) {

@@ -8,7 +8,9 @@ interface BookBorrowRegistryRepositoryInterface
 {
     public function borrowABook(BookBorrowRegistryInterface $registry): void;
 
-    public function returnABook(string $subscriberUuid, string $bookUuid): void;
+    public function returnABook(BookBorrowRegistryInterface $registry): void;
 
     public function bookCanBeBorrowed(string $bookUuid): bool;
+
+    public function findOneByBookUuid(string $bookUuid): array;
 }

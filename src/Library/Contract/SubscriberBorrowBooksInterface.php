@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Library\Contract;
 
-use Exception;
-use Library\Exception\LibrarySubscriberNotFoundException;
-use Library\UseCase\SubscriberBorrowBooks;
-
 interface SubscriberBorrowBooksInterface
 {
     public const BORROWED_BOOKS       = 'borrowed_books';

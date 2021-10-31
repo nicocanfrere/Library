@@ -79,3 +79,7 @@ Content-Type: application/json
         "cfdd4fd5-1378-4b73-a9fd-00aeff713ffc"
     ]
 }
+
+###
+DELETE http://localhost:9999/api/library/subscribers/109e422a-bf7d-4ce1-9a26-1d6df6961982/books/cfdd4fd5-1378-4b73-a9fd-00aeff713ffc
+Accept: application/json

@@ -41,12 +41,19 @@ class BookBorrowRegistryRepository extends AbstractRepository implements BookBor
         $this->insert(self::$metadata, $registry);
     }
 
-    public function returnABook(string $subscriberUuid, string $bookUuid): void
+    public function returnABook(BookBorrowRegistryInterface $registry): void
     {
-        // TODO: Implement returnABook() method.
+        $this->delete(self::$metadata, $registry);
     }
 
     public function bookCanBeBorrowed(string $bookUuid): bool
+    {
+        $row = $this->findOneByBookUuid($bookUuid);
+
+        return empty($row);
+    }
+
+    public function findOneByBookUuid(string $bookUuid): array
     {
         $conditions = [
             [
@@ -56,8 +63,6 @@ class BookBorrowRegistryRepository extends AbstractRepository implements BookBor
                 ],
             ],
         ];
-        $row        = $this->selectSingleWhere(self::$metadata, $conditions);
-
-        return empty($row);
+        return $this->selectSingleWhere(self::$metadata, $conditions);
     }
 }
