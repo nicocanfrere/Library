@@ -1,0 +1,711 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Library Api",
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/library/subscribers": {
+            "get": {
+                "summary": "Returns a list of library subscribers",
+                "responses": {
+                    "200": {
+                        "description": "JSON array of subscribers",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/subscriber_list"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create new subscriber",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/create_subscriber"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Subscriber created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/subscriber"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid data send"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/library/subscribers/{uuid}": {
+            "get": {
+                "summary": "Returns a library subscriber",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Subscriber uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JSON object subscriber",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/subscriber"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscriber not found"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Full subscriber update",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Subscriber uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/create_subscriber"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "JSON object subscriber",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/subscriber"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscriber not found"
+                    },
+                    "422": {
+                        "description": "Invalid data send"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Subscriber partial update",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Subscriber uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/patch_subscriber"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "JSON object subscriber",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/subscriber"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscriber not found"
+                    },
+                    "422": {
+                        "description": "Invalid data send"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a subscriber",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Subscriber uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JSON object subscriber",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/subscriber"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscriber not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/library/subscribers/{uuid}/books": {
+            "post": {
+                "summary": "Manage books subscriber wants to borrow",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Subscriber uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/book_uuid_list"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Result of borrow operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "borrowed_books": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            }
+                                        },
+                                        "not_borrowable_books": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            }
+                                        },
+                                        "unknown_books": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "format": "uuid"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscriber not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/library/subscribers/{uuid}/books/{bookUuid}": {
+            "delete": {
+                "summary": "Subscriber returns a book",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Subscriber uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "bookUuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Book to return uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Book returned",
+                        "content": {
+                            "application/json":{
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "subscriber_uuid": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        },
+                                        "book_uuid": {
+                                            "type": "string",
+                                            "format": "uuid"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscriber not found or book not found or book not borrowed by subscriber"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/library/books": {
+            "get": {
+                "summary": "Returns the list of library's books",
+                "responses": {
+                    "200": {
+                        "description": "JSON array of books",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/book_list"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create new book",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/create_book"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "book created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/book"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Invalid data send"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/api/library/books/{uuid}": {
+            "get": {
+                "summary": "Returns a book",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Book uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JSON object book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/book"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Full book update",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "book uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/create_book"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "JSON object book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/book"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    },
+                    "422": {
+                        "description": "Invalid data send"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "patch": {
+                "summary": "Book partial update",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "book uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/patch_book"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "JSON object book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/book"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    },
+                    "422": {
+                        "description": "Invalid data send"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a book",
+                "parameters": [
+                    {
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true,
+                        "description": "Book uuid",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "JSON object book",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/book"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Book not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "subscriber_list": {
+                "properties": {
+                    "count": {
+                        "type": "integer"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/subscriber"
+                        }
+                    }
+                }
+            },
+            "subscriber": {
+                "properties": {
+                    "@type": {
+                        "type": "string"
+                    },
+                    "@id": {
+                        "type": "string"
+                    },
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "books": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "description": "Uri of book borrowed by subscriber"
+                        }
+                    }
+                }
+            },
+            "create_subscriber": {
+                "properties": {
+                    "last_name": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "required": true
+                    }
+                }
+            },
+            "patch_subscriber": {
+                "properties": {
+                    "last_name": {
+                        "type": "string",
+                        "required": false
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "required": false
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "required": false
+                    }
+                }
+            },
+            "book_uuid_list": {
+                "properties": {
+                    "books": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                }
+            },
+            "book": {
+                "properties": {
+                    "@type": {
+                        "type": "string"
+                    },
+                    "@id": {
+                        "type": "string"
+                    },
+                    "uuid": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "author_name": {
+                        "type": "string"
+                    },
+                    "year_of_publication": {
+                        "type": "integer"
+                    },
+                    "subscriber": {
+                        "type": "array",
+                        "maximum": 1,
+                        "items": {
+                            "type": "string",
+                            "description": "Uri of subscriber subscriber who borrow the book"
+                        }
+                    }
+                }
+            },
+            "book_list": {
+                "properties": {
+                    "count": {
+                        "type": "integer"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/book"
+                        }
+                    }
+                }
+            },
+            "create_book": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "author_name": {
+                        "type": "string",
+                        "required": true
+                    },
+                    "year_of_publication": {
+                        "type": "integer",
+                        "required": true
+                    }
+                }
+            },
+            "patch_book": {
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "required": false
+                    },
+                    "author_name": {
+                        "type": "string",
+                        "required": false
+                    },
+                    "year_of_publication": {
+                        "type": "integer",
+                        "required": false
+                    }
+                }
+            }
+        }
+    }
+}

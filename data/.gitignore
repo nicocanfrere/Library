@@ -3,4 +3,6 @@
 !cache/.gitkeep
 !logs
 !logs/.gitkeep
+!api-doc
+!api-doc/*
 !.gitignore

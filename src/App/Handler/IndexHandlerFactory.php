@@ -14,10 +14,6 @@ class IndexHandlerFactory
 {
     public function __invoke(ContainerInterface $container): RequestHandlerInterface
     {
-        $urlh = $container->get(UrlHelper::class);
-        $path = $urlh->generate('subscribers.list');
-        var_dump($path);
-        die();
         return new IndexHandler();
     }
 }

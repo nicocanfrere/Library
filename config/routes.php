@@ -7,7 +7,8 @@ use Mezzio\MiddlewareFactory;
 use Psr\Container\ContainerInterface;
 
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-
+    $app->get('/', \App\Handler\IndexHandler::class, 'home');
+    $app->get('/api/doc', \App\Handler\ApiDocHandler::class, 'api.doc');
     /* Library Subscribers Management */
     $app->get('/api/library/subscribers', App\Handler\Library\Subscribers\ListHandler::class, 'subscribers.list');
     $app->get(
