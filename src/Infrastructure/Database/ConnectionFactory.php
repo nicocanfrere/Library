@@ -8,7 +8,7 @@ use Infrastructure\Contract\DatabaseConnectionInterface;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 
-class MysqlConnectionFactory
+class ConnectionFactory
 {
     public function __invoke(ContainerInterface $container): DatabaseConnectionInterface
     {
@@ -27,7 +27,7 @@ class MysqlConnectionFactory
         }
         $options = $config['db']['options'] ?? [];
 
-        return new MysqlConnection(
+        return new Connection(
             $config['db']['dsn'],
             $config['db']['username'],
             $config['db']['password'],

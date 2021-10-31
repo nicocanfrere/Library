@@ -19,7 +19,25 @@ return [
         // Use 'factories' for services provided by callbacks/factory classes.
         'factories' => [
             Infrastructure\Contract\DatabaseConnectionInterface::class
-            => Infrastructure\Database\MysqlConnectionFactory::class,
+            => Infrastructure\Database\ConnectionFactory::class,
+            Library\Contract\BookRepositoryInterface::class
+            => Infrastructure\Library\Repository\BookRepositoryFactory::class,
+            Library\Contract\LibrarySubscriberRepositoryInterface::class
+            => Infrastructure\Library\Repository\LibrarySubscriberRepositoryFactory::class,
+            Library\Contract\BookBorrowRegistryRepositoryInterface::class
+            => Infrastructure\Library\Repository\BookBorrowRegistryRepositoryFactory::class,
+            Library\Contract\BookFactoryInterface::class
+            => App\Factory\BookFactoryFactory::class,
+            Library\Contract\UpdateBookInterface::class
+            => App\Factory\UpdateBookFactory::class,
+            Library\Contract\RemoveBookInterface::class
+            => App\Factory\RemoveBookFactory::class,
+            Library\Contract\UpdateSubscriberInterface::class
+            => App\Factory\UpdateSubscriberFactory::class,
+            Library\Contract\RemoveSubscriberInterface::class
+            => App\Factory\RemoveSubscriberFactory::class,
+            Library\Contract\LibrarySubscriberFactoryInterface::class
+            => App\Factory\LibrarySubscriberFactoryFactory::class,
         ],
     ],
 ];

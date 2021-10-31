@@ -8,7 +8,7 @@ use Exception;
 use Infrastructure\Contract\DatabaseConnectionInterface;
 use PDO;
 
-class MysqlConnection implements DatabaseConnectionInterface
+class Connection implements DatabaseConnectionInterface
 {
     private PDO $pdo;
     private bool $connected = false;
@@ -33,7 +33,7 @@ class MysqlConnection implements DatabaseConnectionInterface
             return $this->pdo;
         } catch (Exception $exception) {
             // TODO Log message
-            die;
+            die($exception->getMessage());
         }
     }
 }
