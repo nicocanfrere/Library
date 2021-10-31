@@ -85,7 +85,7 @@ class SubscriberReturnBookTest extends TestCase
             ->willReturn(['uuid' => 'subscriber-uuid']);
         $this->bookBorrowRegistryRepository
             ->method('findOneByBookUuid')
-            ->willReturn(['subscriber' => 'subscriber-uuid']);
+            ->willReturn(['uuid' => 'registry-uuid', 'subscriber' => 'subscriber-uuid', 'book' => 'book-uuid']);
         $returnBook = new SubscriberReturnBook(
             $this->subscriberRepository,
             $this->bookBorrowRegistryRepository
