@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace InfrastructureTest\Contract;
 
-use Infrastructure\Contract\AbstractRepository;
 use Infrastructure\Contract\DatabaseConnectionInterface;
+use Infrastructure\Contract\QueryInterface;
+use Infrastructure\Database\Query;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-class AbstractMysqlRepositoryTest extends TestCase
+class QueryTest extends TestCase
 {
-    private AbstractRepository $testable;
+    private QueryInterface $query;
 
     protected function setUp(): void
     {
-        $connection     = $this->createMock(DatabaseConnectionInterface::class);
-        $logger         = $this->createMock(LoggerInterface::class);
-        $this->testable = new TestableMysqlRepository($connection, $logger);
+        $connection  = $this->createMock(DatabaseConnectionInterface::class);
+        $logger      = $this->createMock(LoggerInterface::class);
+        $this->query = new Query($connection, $logger);
     }
 
     /**
@@ -25,7 +26,7 @@ class AbstractMysqlRepositoryTest extends TestCase
      */
     public function generateInsertSqlQuery()
     {
-        $sql      = $this->testable->generateInsertSqlQuery(
+        $sql      = $this->query->generateInsertSqlQuery(
             [
                 'table'   => 'books',
                 'primary' => 'uuid',
@@ -46,7 +47,7 @@ class AbstractMysqlRepositoryTest extends TestCase
      */
     public function generateUpdateSqlQuery()
     {
-        $sql      = $this->testable->generateUpdateSqlQuery(
+        $sql      = $this->query->generateUpdateSqlQuery(
             [
                 'table'   => 'books',
                 'primary' => 'uuid',
@@ -67,7 +68,7 @@ class AbstractMysqlRepositoryTest extends TestCase
      */
     public function generateOrderByPart()
     {
-        $orderBy  = $this->testable->generateOrderByPart(
+        $orderBy  = $this->query->generateOrderByPart(
             [
                 'table'   => 'books',
                 'primary' => 'uuid',
