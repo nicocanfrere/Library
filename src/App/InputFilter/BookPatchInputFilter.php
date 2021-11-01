@@ -6,6 +6,7 @@ namespace App\InputFilter;
 
 use Laminas\I18n\Validator\IsInt;
 use Laminas\InputFilter\InputFilter;
+use Laminas\Validator\StringLength;
 use Laminas\Validator\Uuid;
 
 class BookPatchInputFilter extends InputFilter
@@ -16,6 +17,9 @@ class BookPatchInputFilter extends InputFilter
             [
                 'name'        => 'title',
                 'allow_empty' => true,
+                'validators' => [
+                    ['name' => StringLength::class, 'options' => ['max' => 255]]
+                ]
             ]
         )
             ->add(
@@ -31,6 +35,9 @@ class BookPatchInputFilter extends InputFilter
                  [
                      'name'        => 'author_name',
                      'allow_empty' => true,
+                     'validators' => [
+                         ['name' => StringLength::class, 'options' => ['max' => 50]]
+                     ]
                  ]
              )
              ->add(

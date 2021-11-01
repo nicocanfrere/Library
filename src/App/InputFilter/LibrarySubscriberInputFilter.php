@@ -6,6 +6,7 @@ namespace App\InputFilter;
 
 use Laminas\InputFilter\InputFilter;
 use Laminas\Validator\EmailAddress;
+use Laminas\Validator\StringLength;
 
 class LibrarySubscriberInputFilter extends InputFilter
 {
@@ -15,12 +16,18 @@ class LibrarySubscriberInputFilter extends InputFilter
             [
                 'name'        => 'first_name',
                 'allow_empty' => false,
+                'validators' => [
+                    ['name' => StringLength::class, 'options' => ['max' => 100]]
+                ]
             ]
         )
              ->add(
                  [
                      'name'        => 'last_name',
                      'allow_empty' => false,
+                     'validators' => [
+                         ['name' => StringLength::class, 'options' => ['max' => 100]]
+                     ]
                  ]
              )
              ->add(
@@ -29,6 +36,7 @@ class LibrarySubscriberInputFilter extends InputFilter
                      'allow_empty' => false,
                      'validators'  => [
                          ['name' => EmailAddress::class],
+                         ['name' => StringLength::class, 'options' => ['max' => 255]]
                      ],
                  ]
              );
