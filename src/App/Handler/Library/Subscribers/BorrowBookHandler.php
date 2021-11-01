@@ -23,10 +23,12 @@ class BorrowBookHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        /** @var array $data */
         $data           = $request->getParsedBody();
         $subscriberUuid = $request->getAttribute('uuid');
         try {
-            $result = $this->subscriberBorrowBooks->borrow($subscriberUuid, $data['books']);
+            $books  = ! empty($data['books']) ? $data['books'] : [];
+            $result = $this->subscriberBorrowBooks->borrow($subscriberUuid, $books);
 
             return new JsonResponse($result);
         } catch (LibrarySubscriberNotFoundException $exception) {

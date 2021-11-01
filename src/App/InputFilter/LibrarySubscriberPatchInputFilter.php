@@ -16,18 +16,18 @@ class LibrarySubscriberPatchInputFilter extends InputFilter
             [
                 'name'        => 'first_name',
                 'allow_empty' => true,
-                'validators' => [
-                    ['name' => StringLength::class, 'options' => ['max' => 100]]
-                ]
+                'validators'  => [
+                    ['name' => StringLength::class, 'options' => ['max' => 100]],
+                ],
             ]
         )
              ->add(
                  [
                      'name'        => 'last_name',
                      'allow_empty' => true,
-                     'validators' => [
-                         ['name' => StringLength::class, 'options' => ['max' => 100]]
-                     ]
+                     'validators'  => [
+                         ['name' => StringLength::class, 'options' => ['max' => 100]],
+                     ],
                  ]
              )
              ->add(
@@ -36,7 +36,7 @@ class LibrarySubscriberPatchInputFilter extends InputFilter
                      'allow_empty' => true,
                      'validators'  => [
                          ['name' => EmailAddress::class],
-                         ['name' => StringLength::class, 'options' => ['max' => 255]]
+                         ['name' => StringLength::class, 'options' => ['max' => 255]],
                      ],
                  ]
              );

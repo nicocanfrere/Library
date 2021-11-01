@@ -9,7 +9,6 @@ use Infrastructure\Contract\DatabaseConnectionInterface;
 use Infrastructure\Contract\QueryInterface;
 use PDOException;
 use Psr\Log\LoggerInterface;
-
 use RuntimeException;
 
 use function array_keys;
@@ -132,7 +131,8 @@ class Query implements QueryInterface
                 );
                 throw new Exception();
             }
-
+            /** before PHP8, fetchAll return array|false, now always array */
+            /** @phpstan-ignore-next-line */
             return $stmt->fetchAll();
         } catch (Exception $exception) {
             $this->logger->critical(
@@ -171,7 +171,8 @@ class Query implements QueryInterface
                 );
                 throw new Exception();
             }
-
+            /** before PHP8, fetchAll return array|false, now always array */
+            /** @phpstan-ignore-next-line */
             return $stmt->fetchAll();
         } catch (Exception $exception) {
             $this->logger->critical(
@@ -210,6 +211,7 @@ class Query implements QueryInterface
                 );
                 throw new Exception();
             }
+            /** @var array $results */
             $results = $stmt->fetchAll();
             if (count($results) > 1) {
                 $exception = new Exception('More than one result');

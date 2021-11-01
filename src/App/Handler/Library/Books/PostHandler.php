@@ -33,7 +33,9 @@ class PostHandler implements RequestHandlerInterface
             try {
                 $filtered = $this->inputFilter->getValues();
                 $book     = $this->bookFactory->create($filtered);
-                $book     = $this->bookDataProvider->single($book->getUuid());
+                /** @var string $uuid */
+                $uuid = $book->getUuid();
+                $book = $this->bookDataProvider->single($uuid);
 
                 return new JsonResponse($book, 201);
             } catch (Exception $exception) {

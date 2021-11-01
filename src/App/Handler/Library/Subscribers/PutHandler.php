@@ -35,7 +35,9 @@ class PutHandler implements RequestHandlerInterface
             try {
                 $filtered   = $this->inputFilter->getValues();
                 $subscriber = $this->updateSubscriber->update($request->getAttribute('uuid'), $filtered);
-                $subscriber = $this->provider->single($subscriber->getUuid());
+                /** @var string $uuid */
+                $uuid       = $subscriber->getUuid();
+                $subscriber = $this->provider->single($uuid);
 
                 return new JsonResponse($subscriber, 200);
             } catch (LibrarySubscriberNotFoundException $exception) {

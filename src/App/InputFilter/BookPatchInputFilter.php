@@ -17,9 +17,9 @@ class BookPatchInputFilter extends InputFilter
             [
                 'name'        => 'title',
                 'allow_empty' => true,
-                'validators' => [
-                    ['name' => StringLength::class, 'options' => ['max' => 255]]
-                ]
+                'validators'  => [
+                    ['name' => StringLength::class, 'options' => ['max' => 255]],
+                ],
             ]
         )
             ->add(
@@ -35,9 +35,9 @@ class BookPatchInputFilter extends InputFilter
                  [
                      'name'        => 'author_name',
                      'allow_empty' => true,
-                     'validators' => [
-                         ['name' => StringLength::class, 'options' => ['max' => 50]]
-                     ]
+                     'validators'  => [
+                         ['name' => StringLength::class, 'options' => ['max' => 50]],
+                     ],
                  ]
              )
              ->add(

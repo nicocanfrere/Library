@@ -16,18 +16,18 @@ class BookCreateInputFilter extends InputFilter
             [
                 'name'        => 'title',
                 'allow_empty' => false,
-                'validators' => [
-                    ['name' => StringLength::class, 'options' => ['max' => 255]]
-                ]
+                'validators'  => [
+                    ['name' => StringLength::class, 'options' => ['max' => 255]],
+                ],
             ]
         )
             ->add(
                 [
                     'name'        => 'author_name',
                     'allow_empty' => false,
-                    'validators' => [
-                        ['name' => StringLength::class, 'options' => ['max' => 50]]
-                    ]
+                    'validators'  => [
+                        ['name' => StringLength::class, 'options' => ['max' => 50]],
+                    ],
                 ]
             )
             ->add(

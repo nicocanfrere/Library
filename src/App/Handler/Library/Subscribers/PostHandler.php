@@ -20,7 +20,7 @@ class PostHandler implements RequestHandlerInterface
     public function __construct(
         private InputFilterInterface $inputFilter,
         private LibrarySubscriberFactoryInterface $librarySubscriberFactory,
-        private DataProviderInterface $dataProvider,
+        private DataProviderInterface $provider,
         private LoggerInterface $logger
     ) {
     }
@@ -34,7 +34,9 @@ class PostHandler implements RequestHandlerInterface
             try {
                 $filtered   = $this->inputFilter->getValues();
                 $subscriber = $this->librarySubscriberFactory->create($filtered);
-                $subscriber = $this->dataProvider->single($subscriber->getUuid());
+                /** @var string $uuid */
+                $uuid       = $subscriber->getUuid();
+                $subscriber = $this->provider->single($uuid);
 
                 return new JsonResponse($subscriber, 201);
             } catch (LibrarySubscriberEmailAlreadyUsedException $exception) {
