@@ -27,7 +27,7 @@
 
 Clone the repository, in cli do:
 ```bash
-git clone
+git clone https://github.com/nicocanfrere/Library.git
 ```
 In project root directory, install vendors with composer, in cli do:
 ```bash
@@ -78,6 +78,14 @@ http://127.0.0.1:9999
 Or with Curl request, or if you have PhpStorm, you will find "http" files in .http-requests directory 
 
 ### Routes
+
+### Api doc
+
+<pre style="font-size: 16px;">
+<code>
+- Api doc, JSON format: GET http://127.0.0.1:9999/api/doc
+</code>
+</pre>
 
 #### Books
 <pre style="font-size: 16px;">
@@ -144,7 +152,12 @@ Library (root directory)
 |   |_ ...files
 |
 |_ db (Phinx migrations and seeds)
-|   |_ ...files
+|   |_ cache
+|   |   |_ ...files
+|   |_ logs
+|   |   |_ ...files
+|   |_ api-doc
+|       |_ openapi.json
 |
 |_ public (Document root directory)
 |   |_ index.php (App entry point)
