@@ -567,14 +567,17 @@
                         "format": "uuid"
                     },
                     "last_name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 100
                     },
                     "first_name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 100
                     },
                     "email": {
                         "type": "string",
-                        "format": "email"
+                        "format": "email",
+                        "maxLength": 255
                     },
                     "books": {
                         "type": "array",
@@ -589,16 +592,19 @@
                 "properties": {
                     "last_name": {
                         "type": "string",
-                        "required": true
+                        "required": true,
+                        "maxLength": 100
                     },
                     "first_name": {
                         "type": "string",
-                        "required": true
+                        "required": true,
+                        "maxLength": 100
                     },
                     "email": {
                         "type": "string",
                         "format": "email",
-                        "required": true
+                        "required": true,
+                        "maxLength": 255
                     }
                 }
             },
@@ -606,16 +612,19 @@
                 "properties": {
                     "last_name": {
                         "type": "string",
-                        "required": false
+                        "required": false,
+                        "maxLength": 100
                     },
                     "first_name": {
                         "type": "string",
-                        "required": false
+                        "required": false,
+                        "maxLength": 100
                     },
                     "email": {
                         "type": "string",
                         "format": "email",
-                        "required": false
+                        "required": false,
+                        "maxLength": 100
                     }
                 }
             },
@@ -643,10 +652,12 @@
                         "format": "uuid"
                     },
                     "title": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 255
                     },
                     "author_name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 50
                     },
                     "year_of_publication": {
                         "type": "integer"
@@ -678,11 +689,13 @@
                 "properties": {
                     "title": {
                         "type": "string",
-                        "required": true
+                        "required": true,
+                        "maxLength": 255
                     },
                     "author_name": {
                         "type": "string",
-                        "required": true
+                        "required": true,
+                        "maxLength": 50
                     },
                     "year_of_publication": {
                         "type": "integer",
@@ -694,11 +707,13 @@
                 "properties": {
                     "title": {
                         "type": "string",
-                        "required": false
+                        "required": false,
+                        "maxLength": 255
                     },
                     "author_name": {
                         "type": "string",
-                        "required": false
+                        "required": false,
+                        "maxLength": 50
                     },
                     "year_of_publication": {
                         "type": "integer",
