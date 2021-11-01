@@ -7,6 +7,7 @@ namespace LibraryTest;
 use Library\BookFactory;
 use Library\Contract\BookInterface;
 use Library\Contract\BookRepositoryInterface;
+use Library\Contract\IdentifierFactoryInterface;
 use PHPUnit\Framework\TestCase;
 
 class BookFactoryTest extends TestCase
@@ -16,8 +17,11 @@ class BookFactoryTest extends TestCase
      */
     public function create()
     {
+        $identifierFactory = $this->createMock(IdentifierFactoryInterface::class);
+        $identifierFactory->method('create')->willReturn('uuid');
         $factory = new BookFactory(
-            $this->createMock(BookRepositoryInterface::class)
+            $this->createMock(BookRepositoryInterface::class),
+            $identifierFactory
         );
         $values  = ['title' => 'title', 'author_name' => 'author_name', 'year_of_publication' => 2021];
         $book    = $factory->create($values);

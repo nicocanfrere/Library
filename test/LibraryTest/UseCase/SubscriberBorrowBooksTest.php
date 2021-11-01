@@ -8,6 +8,7 @@ use Library\BookBorrowRegistryFactory;
 use Library\Contract\BookBorrowRegistryFactoryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\BookRepositoryInterface;
+use Library\Contract\IdentifierFactoryInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Contract\SubscriberBorrowBooksInterface;
 use Library\Exception\LibrarySubscriberNotFoundException;
@@ -74,7 +75,11 @@ class SubscriberBorrowBooksTest extends TestCase
         $this->bookRepository->method('findBookByUuid')->willReturn([true]);
         $bookBorrowRegistryRepository = $this->createMock(BookBorrowRegistryRepositoryInterface::class);
         $bookBorrowRegistryRepository->method('bookCanBeBorrowed')->willReturn(false);
-        $bookBorrowRegistryFactory = new BookBorrowRegistryFactory($bookBorrowRegistryRepository, $this->logger);
+        $bookBorrowRegistryFactory = new BookBorrowRegistryFactory(
+            $bookBorrowRegistryRepository,
+            $this->createMock(IdentifierFactoryInterface::class),
+            $this->logger
+        );
         $subscriberBorrowBooks     = new SubscriberBorrowBooks(
             $this->subscriberRepository,
             $this->bookRepository,

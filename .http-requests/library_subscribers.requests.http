@@ -11,9 +11,9 @@ POST http://localhost:9999/api/library/subscribers
 Content-Type: application/json
 
 {
-    "first_name": "Jane",
-    "last_name": "Doe",
-    "email": "jane.doe@example.org"
+    "first_name": "Tony",
+    "last_name": "Stark",
+    "email": "iron.man@example.org"
 }
 
 ### invalid request email exists for another user
@@ -64,7 +64,8 @@ Content-Type: application/json
     "books": [
         "36af30ca-319c-4b63-b958-339d30dea3dd",
         "18ad8511-af26-4327-ab2d-b046269185ff",
-        "18ad8511-af26-4327-ab2d-b04626918500"
+        "18ad8511-af26-4327-ab2d-b04626918500",
+        "f53de3e4-edcc-4554-880a-19864e90ef0f"
     ]
 }
 

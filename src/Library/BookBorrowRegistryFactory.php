@@ -7,14 +7,15 @@ namespace Library;
 use Library\Contract\BookBorrowRegistryFactoryInterface;
 use Library\Contract\BookBorrowRegistryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
+use Library\Contract\IdentifierFactoryInterface;
 use Library\Exception\BookAlreadyBorrowedException;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 
 class BookBorrowRegistryFactory implements BookBorrowRegistryFactoryInterface
 {
     public function __construct(
         private BookBorrowRegistryRepositoryInterface $repository,
+        private IdentifierFactoryInterface $identifierFactory,
         private LoggerInterface $logger
     ) {
     }
@@ -30,7 +31,7 @@ class BookBorrowRegistryFactory implements BookBorrowRegistryFactoryInterface
             );
             throw $exception;
         }
-        $uuid     = ! empty($data['uuid']) ? $data['uuid'] : Uuid::uuid4()->toString();
+        $uuid     = ! empty($data['uuid']) ? $data['uuid'] : $this->identifierFactory->create();
         $registry = BookBorrowRegistry::create(
             $uuid,
             $data['subscriber_uuid'],

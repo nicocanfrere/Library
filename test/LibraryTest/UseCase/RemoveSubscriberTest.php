@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LibraryTest\UseCase;
 
+use Library\Contract\IdentifierFactoryInterface;
 use Library\Contract\LibrarySubscriberFactoryInterface;
 use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
@@ -54,9 +55,11 @@ class RemoveSubscriberTest extends TestCase
                 'email'      => 'new_email@example.com',
             ];
         $this->repository->method('findLibrarySubscriberByUuid')->willReturn($values);
+        $identifierFactory = $this->createMock(IdentifierFactoryInterface::class);
+        $identifierFactory->method('create')->willReturn('uuid');
         $removeSubscriber = new RemoveSubscriber(
             $this->repository,
-            new LibrarySubscriberFactory($this->repository, $this->logger),
+            new LibrarySubscriberFactory($this->repository, $identifierFactory, $this->logger),
             $this->logger
         );
         $subscriber       = $removeSubscriber->remove('uuid');

@@ -11,9 +11,9 @@ POST http://localhost:9999/api/library/books
 Content-Type: application/json
 
 {
-    "title": "Api Book, by examples",
+    "title": "Api Book, the best parts",
     "author_name": "John Doe",
-    "year_of_publication": 2022
+    "year_of_publication": 2023
 }
 
 ### Invalid data

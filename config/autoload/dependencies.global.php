@@ -14,7 +14,8 @@ return [
         // not require arguments to the constructor. Map a service name to the
         // class name.
         'invokables' => [
-            // Fully\Qualified\InterfaceName::class => Fully\Qualified\ClassName::class,
+            Library\Contract\IdentifierFactoryInterface::class
+            => App\Factory\IdentifierFactory::class,
         ],
         // Use 'factories' for services provided by callbacks/factory classes.
         'factories' => [

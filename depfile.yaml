@@ -57,10 +57,10 @@ ruleset:
     - Infrastructure
     - Laminas
     - Mezzio
+    - Ramsey
   Infrastructure:
     - Psr
     - Monolog
     - Library
   Library:
     - Psr
-    - Ramsey

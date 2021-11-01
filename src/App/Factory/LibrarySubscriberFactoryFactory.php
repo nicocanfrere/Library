@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Factory;
 
+use Library\Contract\IdentifierFactoryInterface;
 use Library\Contract\LibrarySubscriberFactoryInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\LibrarySubscriberFactory;
@@ -14,9 +15,10 @@ class LibrarySubscriberFactoryFactory
 {
     public function __invoke(ContainerInterface $container): LibrarySubscriberFactoryInterface
     {
-        $repository = $container->get(LibrarySubscriberRepositoryInterface::class);
-        $logger     = $container->get(LoggerInterface::class);
+        $repository        = $container->get(LibrarySubscriberRepositoryInterface::class);
+        $identifierFactory = $container->get(IdentifierFactoryInterface::class);
+        $logger            = $container->get(LoggerInterface::class);
 
-        return new LibrarySubscriberFactory($repository, $logger);
+        return new LibrarySubscriberFactory($repository, $identifierFactory, $logger);
     }
 }

@@ -9,6 +9,7 @@ use App\Handler\Library\Books\PostHandler;
 use Laminas\InputFilter\InputFilterInterface;
 use Library\BookFactory;
 use Library\Contract\BookRepositoryInterface;
+use Library\Contract\IdentifierFactoryInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -41,7 +42,10 @@ class PostHandlerTest extends TestCase
 
         $handler = new PostHandler(
             $this->inputFilter,
-            new BookFactory($this->bookRepository),
+            new BookFactory(
+                $this->bookRepository,
+                $this->createMock(IdentifierFactoryInterface::class)
+            ),
             $this->bookDataProvider,
             $this->logger
         );

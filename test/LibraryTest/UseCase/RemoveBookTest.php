@@ -8,6 +8,7 @@ use Library\BookFactory;
 use Library\Contract\BookFactoryInterface;
 use Library\Contract\BookInterface;
 use Library\Contract\BookRepositoryInterface;
+use Library\Contract\IdentifierFactoryInterface;
 use Library\Exception\BookNotFoundException;
 use Library\UseCase\RemoveBook;
 use PHPUnit\Framework\TestCase;
@@ -46,7 +47,10 @@ class RemoveBookTest extends TestCase
         $this->bookRepository->method('findBookByUuid')->willReturn($values);
         $remover = new RemoveBook(
             $this->bookRepository,
-            new BookFactory($this->bookRepository),
+            new BookFactory(
+                $this->bookRepository,
+                $this->createMock(IdentifierFactoryInterface::class)
+            ),
             $this->logger
         );
         $book    = $remover->remove('uuid');

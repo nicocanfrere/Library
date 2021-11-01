@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Library;
 
+use Library\Contract\IdentifierFactoryInterface;
 use Library\Contract\LibrarySubscriberFactoryInterface;
 use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Exception\LibrarySubscriberEmailAlreadyUsedException;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 
 class LibrarySubscriberFactory implements LibrarySubscriberFactoryInterface
 {
     public function __construct(
         private LibrarySubscriberRepositoryInterface $repository,
+        private IdentifierFactoryInterface $identifierFactory,
         private LoggerInterface $logger
     ) {
     }
@@ -32,7 +33,7 @@ class LibrarySubscriberFactory implements LibrarySubscriberFactoryInterface
                 throw $exception;
             }
         }
-        $uuid       = ! empty($data['uuid']) ? $data['uuid'] : Uuid::uuid4()->toString();
+        $uuid       = ! empty($data['uuid']) ? $data['uuid'] : $this->identifierFactory->create();
         $subscriber = LibrarySubscriber::create(
             $uuid,
             $data['first_name'],
