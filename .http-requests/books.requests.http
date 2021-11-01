@@ -11,7 +11,7 @@ POST http://localhost:9999/api/library/books
 Content-Type: application/json
 
 {
-    "title": "Api Book, the best parts",
+    "title": "Api Book, the best parts volume 2",
     "author_name": "John Doe",
     "year_of_publication": 2023
 }
@@ -59,7 +59,7 @@ Content-Type: application/json
 }
 
 ### !!! change the uuid with an existing one
-DELETE http://localhost:9999/api/library/books/382b889e-1cc3-4512-a9fd-609a187f77b8
+DELETE http://localhost:9999/api/library/books/84f2011a-6c1f-43c2-bf8d-af2b10caeb31
 Accept: application/json
 
 ### book not exists => 404

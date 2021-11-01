@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Infrastructure\Library\Repository;
 
-use Infrastructure\Contract\DatabaseConnectionInterface;
+use Infrastructure\Contract\QueryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Psr\Container\ContainerInterface;
@@ -14,10 +14,10 @@ class LibrarySubscriberRepositoryFactory
 {
     public function __invoke(ContainerInterface $container): LibrarySubscriberRepositoryInterface
     {
-        $connection           = $container->get(DatabaseConnectionInterface::class);
+        $query                = $container->get(QueryInterface::class);
         $bookBorrowRepository = $container->get(BookBorrowRegistryRepositoryInterface::class);
         $logger               = $container->get(LoggerInterface::class);
 
-        return new LibrarySubscriberRepository($connection, $bookBorrowRepository, $logger);
+        return new LibrarySubscriberRepository($query, $bookBorrowRepository, $logger);
     }
 }

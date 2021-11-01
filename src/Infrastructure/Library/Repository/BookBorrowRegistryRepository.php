@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Infrastructure\Library\Repository;
 
-use Infrastructure\Contract\AbstractRepository;
+use Infrastructure\Contract\QueryInterface;
 use Library\BookBorrowRegistry;
 use Library\Contract\BookBorrowRegistryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 
-class BookBorrowRegistryRepository extends AbstractRepository implements BookBorrowRegistryRepositoryInterface
+class BookBorrowRegistryRepository implements BookBorrowRegistryRepositoryInterface
 {
     public static array $metadata = [
         'class'        => BookBorrowRegistry::class,
@@ -36,14 +36,19 @@ class BookBorrowRegistryRepository extends AbstractRepository implements BookBor
         ],
     ];
 
+    public function __construct(
+        private QueryInterface $query
+    ) {
+    }
+
     public function borrowABook(BookBorrowRegistryInterface $registry): void
     {
-        $this->insert(self::$metadata, $registry);
+        $this->query->insert(self::$metadata, $registry);
     }
 
     public function returnABook(BookBorrowRegistryInterface $registry): void
     {
-        $this->delete(self::$metadata, $registry);
+        $this->query->delete(self::$metadata, $registry);
     }
 
     public function bookCanBeBorrowed(string $bookUuid): bool
@@ -63,6 +68,20 @@ class BookBorrowRegistryRepository extends AbstractRepository implements BookBor
                 ],
             ],
         ];
-        return $this->selectSingleWhere(self::$metadata, $conditions);
+        return $this->query->selectSingleWhere(self::$metadata, $conditions);
+    }
+
+    public function findAllBySubscriberUuid(string $uuid): array
+    {
+        $conditions = [
+            [
+                'condition'  => 'subscriber = :subscriber_uuid',
+                'parameters' => [
+                    'subscriber_uuid' => $uuid,
+                ],
+            ],
+        ];
+
+        return $this->query->selectWhere(self::$metadata, $conditions);
     }
 }

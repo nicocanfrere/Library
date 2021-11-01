@@ -13,4 +13,6 @@ interface BookBorrowRegistryRepositoryInterface
     public function bookCanBeBorrowed(string $bookUuid): bool;
 
     public function findOneByBookUuid(string $bookUuid): array;
+
+    public function findAllBySubscriberUuid(string $uuid): array;
 }

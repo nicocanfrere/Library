@@ -21,6 +21,8 @@ return [
         'factories' => [
             Infrastructure\Contract\DatabaseConnectionInterface::class
             => Infrastructure\Database\ConnectionFactory::class,
+            Infrastructure\Contract\QueryInterface::class
+            => Infrastructure\Database\QueryFactory::class,
             Library\Contract\BookRepositoryInterface::class
             => Infrastructure\Library\Repository\BookRepositoryFactory::class,
             Library\Contract\LibrarySubscriberRepositoryInterface::class

@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Infrastructure\Library\Repository;
 
-use Infrastructure\Contract\AbstractRepository;
-use Infrastructure\Contract\DatabaseConnectionInterface;
+use Infrastructure\Contract\QueryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\LibrarySubscriber;
 use Psr\Log\LoggerInterface;
 
-class LibrarySubscriberRepository extends AbstractRepository implements
+class LibrarySubscriberRepository implements
     LibrarySubscriberRepositoryInterface
 {
     public static array $metadata = [
@@ -40,26 +39,25 @@ class LibrarySubscriberRepository extends AbstractRepository implements
     ];
 
     public function __construct(
-        protected DatabaseConnectionInterface $connection,
+        protected QueryInterface $query,
         protected BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository,
         protected LoggerInterface $logger
     ) {
-        parent::__construct($this->connection, $this->logger);
     }
 
     public function registerNewLibrarySubscriber(LibrarySubscriberInterface $subscriber): void
     {
-        $this->insert(self::$metadata, $subscriber);
+        $this->query->insert(self::$metadata, $subscriber);
     }
 
     public function unregisterLibrarySubscriber(LibrarySubscriberInterface $subscriber): void
     {
-        $this->delete(self::$metadata, $subscriber);
+        $this->query->delete(self::$metadata, $subscriber);
     }
 
     public function listLibrarySubscribers(): array
     {
-        $subscribers = $this->select(self::$metadata, ['last_name' => 'ASC']);
+        $subscribers = $this->query->select(self::$metadata, ['last_name' => 'ASC']);
         foreach ($subscribers as $key => $subscriber) {
             $subscribers[$key] = $this->addBooksToSubscriber($subscriber);
         }
@@ -77,7 +75,7 @@ class LibrarySubscriberRepository extends AbstractRepository implements
                 ],
             ],
         ];
-        $subscriber = $this->selectSingleWhere(self::$metadata, $conditions);
+        $subscriber = $this->query->selectSingleWhere(self::$metadata, $conditions);
         if ($subscriber) {
             $subscriber = $this->addBooksToSubscriber($subscriber);
         }
@@ -87,16 +85,8 @@ class LibrarySubscriberRepository extends AbstractRepository implements
 
     public function addBooksToSubscriber(array $subscriber): array
     {
-        $conditions          = [
-            [
-                'condition'  => 'subscriber = :subscriber_uuid',
-                'parameters' => [
-                    'subscriber_uuid' => $subscriber['uuid'],
-                ],
-            ],
-        ];
         $subscriber['books'] = $this->bookBorrowRegistryRepository
-            ->selectWhere(BookBorrowRegistryRepository::$metadata, $conditions);
+            ->findAllBySubscriberUuid($subscriber['uuid']);
 
         return $subscriber;
     }
@@ -111,7 +101,7 @@ class LibrarySubscriberRepository extends AbstractRepository implements
                 ],
             ],
         ];
-        $subscriber = $this->selectSingleWhere(self::$metadata, $conditions);
+        $subscriber = $this->query->selectSingleWhere(self::$metadata, $conditions);
         if ($subscriber) {
             $subscriber = $this->addBooksToSubscriber($subscriber);
         }
@@ -121,6 +111,6 @@ class LibrarySubscriberRepository extends AbstractRepository implements
 
     public function updateSubscriber(LibrarySubscriberInterface $subscriber): void
     {
-        $this->update(self::$metadata, $subscriber);
+        $this->query->update(self::$metadata, $subscriber);
     }
 }

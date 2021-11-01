@@ -42,6 +42,7 @@ class BookDataProvider extends AbstractDataProvider
     public function collection(): array
     {
         $books = $this->bookRepository->getLibraryCatalog();
+        //var_dump($books);die;
         foreach ($books as $key => $book) {
             if (! empty($book['subscriber'])) {
                 $book['subscriber'] = [
