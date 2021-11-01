@@ -71,6 +71,10 @@ vendor/bin/phinx seed:run
 
 ## Access application
 
+Before you need to rename:
+- config/autoload/local.php.dist to config/autoload/local.php
+- config/autoload/development.local.php.dist to config/autoload/development.local.php
+
 Access the application in your browser:
 ```text
 http://127.0.0.1:9999
