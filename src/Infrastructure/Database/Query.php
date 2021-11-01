@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Infrastructure\Database;
 
+use Exception;
 use Infrastructure\Contract\DatabaseConnectionInterface;
 use Infrastructure\Contract\QueryInterface;
+use PDOException;
 use Psr\Log\LoggerInterface;
+
+use RuntimeException;
 
 use function array_keys;
 use function array_map;
