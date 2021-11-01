@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Infrastructure\Library\Repository;
 
 use Infrastructure\Contract\QueryInterface;
+use Infrastructure\Contract\ResourceMetadataInterface;
 use Library\Book;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\BookInterface;
 use Library\Contract\BookRepositoryInterface;
-use Psr\Log\LoggerInterface;
 
 class BookRepository implements BookRepositoryInterface
 {
@@ -38,25 +38,25 @@ class BookRepository implements BookRepositoryInterface
     ];
 
     public function __construct(
-        protected QueryInterface $query,
-        protected BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository,
-        protected LoggerInterface $logger
+        private QueryInterface $query,
+        private ResourceMetadataInterface $resourceMetadata,
+        private BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository
     ) {
     }
 
     public function registerNewBook(BookInterface $book): void
     {
-        $this->query->insert(self::$metadata, $book);
+        $this->query->insert($this->resourceMetadata, $book);
     }
 
     public function unregisterBook(BookInterface $book): void
     {
-        $this->query->delete(self::$metadata, $book);
+        $this->query->delete($this->resourceMetadata, $book);
     }
 
     public function getLibraryCatalog(): array
     {
-        $books = $this->query->select(self::$metadata, ['title' => 'ASC']);
+        $books = $this->query->select($this->resourceMetadata, ['title' => 'ASC']);
         foreach ($books as $key => $book) {
             $books[$key] = $this->addSubscriberToBook($book);
         }
@@ -74,7 +74,7 @@ class BookRepository implements BookRepositoryInterface
                 ],
             ],
         ];
-        $book       = $this->query->selectSingleWhere(self::$metadata, $conditions);
+        $book       = $this->query->selectSingleWhere($this->resourceMetadata, $conditions);
         if ($book) {
             $book = $this->addSubscriberToBook($book);
         }
@@ -92,6 +92,6 @@ class BookRepository implements BookRepositoryInterface
 
     public function updateBook(BookInterface $book): void
     {
-        $this->query->update(self::$metadata, $book);
+        $this->query->update($this->resourceMetadata, $book);
     }
 }

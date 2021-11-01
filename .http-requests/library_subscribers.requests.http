@@ -11,9 +11,9 @@ POST http://localhost:9999/api/library/subscribers
 Content-Type: application/json
 
 {
-    "first_name": "Tony",
-    "last_name": "Stark",
-    "email": "iron.man@example.org"
+    "first_name": "Nicolas",
+    "last_name": "Canfrere",
+    "email": "nico1@example.org"
 }
 
 ### invalid request email exists for another user
@@ -32,7 +32,7 @@ Content-Type: application/json
 
 {
     "first_name": "Alphonse",
-    "last_name": "Danlemur",
+    "last_name": "Danlemur De Brick",
     "email": "alphone.danlemur@example.org"
 }
 

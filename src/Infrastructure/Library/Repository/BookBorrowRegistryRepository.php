@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Infrastructure\Library\Repository;
 
 use Infrastructure\Contract\QueryInterface;
+use Infrastructure\Contract\ResourceMetadataInterface;
 use Library\BookBorrowRegistry;
 use Library\Contract\BookBorrowRegistryInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
@@ -37,18 +38,19 @@ class BookBorrowRegistryRepository implements BookBorrowRegistryRepositoryInterf
     ];
 
     public function __construct(
-        private QueryInterface $query
+        private QueryInterface $query,
+        private ResourceMetadataInterface $resourceMetadata
     ) {
     }
 
     public function borrowABook(BookBorrowRegistryInterface $registry): void
     {
-        $this->query->insert(self::$metadata, $registry);
+        $this->query->insert($this->resourceMetadata, $registry);
     }
 
     public function returnABook(BookBorrowRegistryInterface $registry): void
     {
-        $this->query->delete(self::$metadata, $registry);
+        $this->query->delete($this->resourceMetadata, $registry);
     }
 
     public function bookCanBeBorrowed(string $bookUuid): bool
@@ -68,7 +70,7 @@ class BookBorrowRegistryRepository implements BookBorrowRegistryRepositoryInterf
                 ],
             ],
         ];
-        return $this->query->selectSingleWhere(self::$metadata, $conditions);
+        return $this->query->selectSingleWhere($this->resourceMetadata, $conditions);
     }
 
     public function findAllBySubscriberUuid(string $uuid): array
@@ -82,6 +84,6 @@ class BookBorrowRegistryRepository implements BookBorrowRegistryRepositoryInterf
             ],
         ];
 
-        return $this->query->selectWhere(self::$metadata, $conditions);
+        return $this->query->selectWhere($this->resourceMetadata, $conditions);
     }
 }

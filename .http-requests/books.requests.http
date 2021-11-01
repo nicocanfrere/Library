@@ -11,7 +11,7 @@ POST http://localhost:9999/api/library/books
 Content-Type: application/json
 
 {
-    "title": "Api Book, the best parts volume 2",
+    "title": "Testing metadata v1",
     "author_name": "John Doe",
     "year_of_publication": 2023
 }
@@ -27,12 +27,12 @@ Content-Type: application/json
 }
 
 ###  !!! change the uuid with an existing one
-PATCH http://localhost:9999/api/library/books/18ad8511-af26-4327-ab2d-b046269185ff
+PATCH http://localhost:9999/api/library/books/36af30ca-319c-4b63-b958-339d30dea3dd
 Content-Type: application/json
 
 {
     "uuid": "18ad8511-af26-4327-ab2d-b046269185ff",
-    "title": "Api Book Volume 2",
+    "title": "Api Book Volume 2, 2eme édition",
     "author_name": "John Doe",
     "year_of_publication": 2022
 }
@@ -59,7 +59,7 @@ Content-Type: application/json
 }
 
 ### !!! change the uuid with an existing one
-DELETE http://localhost:9999/api/library/books/84f2011a-6c1f-43c2-bf8d-af2b10caeb31
+DELETE http://localhost:9999/api/library/books/88ba4c8a-0a04-4a64-8baa-6d4bd2910707
 Accept: application/json
 
 ### book not exists => 404

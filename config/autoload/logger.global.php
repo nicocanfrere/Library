@@ -7,7 +7,7 @@ return [
         'name'     => 'monolog',
         'handlers' => [
             'stream_handler' => [
-                'path' => realpath(__DIR__ . '/../../data/logs').'/app.log',
+                'path' => realpath(__DIR__ . '/../../data/logs') . '/app.log',
             ],
         ],
     ],

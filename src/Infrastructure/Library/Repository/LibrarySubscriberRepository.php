@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Infrastructure\Library\Repository;
 
 use Infrastructure\Contract\QueryInterface;
+use Infrastructure\Contract\ResourceMetadataInterface;
 use Library\Contract\BookBorrowRegistryRepositoryInterface;
 use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\LibrarySubscriber;
-use Psr\Log\LoggerInterface;
 
 class LibrarySubscriberRepository implements
     LibrarySubscriberRepositoryInterface
@@ -39,25 +39,25 @@ class LibrarySubscriberRepository implements
     ];
 
     public function __construct(
-        protected QueryInterface $query,
-        protected BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository,
-        protected LoggerInterface $logger
+        private QueryInterface $query,
+        private ResourceMetadataInterface $resourceMetadata,
+        private BookBorrowRegistryRepositoryInterface $bookBorrowRegistryRepository
     ) {
     }
 
     public function registerNewLibrarySubscriber(LibrarySubscriberInterface $subscriber): void
     {
-        $this->query->insert(self::$metadata, $subscriber);
+        $this->query->insert($this->resourceMetadata, $subscriber);
     }
 
     public function unregisterLibrarySubscriber(LibrarySubscriberInterface $subscriber): void
     {
-        $this->query->delete(self::$metadata, $subscriber);
+        $this->query->delete($this->resourceMetadata, $subscriber);
     }
 
     public function listLibrarySubscribers(): array
     {
-        $subscribers = $this->query->select(self::$metadata, ['last_name' => 'ASC']);
+        $subscribers = $this->query->select($this->resourceMetadata, ['last_name' => 'ASC']);
         foreach ($subscribers as $key => $subscriber) {
             $subscribers[$key] = $this->addBooksToSubscriber($subscriber);
         }
@@ -75,7 +75,7 @@ class LibrarySubscriberRepository implements
                 ],
             ],
         ];
-        $subscriber = $this->query->selectSingleWhere(self::$metadata, $conditions);
+        $subscriber = $this->query->selectSingleWhere($this->resourceMetadata, $conditions);
         if ($subscriber) {
             $subscriber = $this->addBooksToSubscriber($subscriber);
         }
@@ -101,7 +101,7 @@ class LibrarySubscriberRepository implements
                 ],
             ],
         ];
-        $subscriber = $this->query->selectSingleWhere(self::$metadata, $conditions);
+        $subscriber = $this->query->selectSingleWhere($this->resourceMetadata, $conditions);
         if ($subscriber) {
             $subscriber = $this->addBooksToSubscriber($subscriber);
         }
@@ -111,6 +111,6 @@ class LibrarySubscriberRepository implements
 
     public function updateSubscriber(LibrarySubscriberInterface $subscriber): void
     {
-        $this->query->update(self::$metadata, $subscriber);
+        $this->query->update($this->resourceMetadata, $subscriber);
     }
 }

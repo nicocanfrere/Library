@@ -7,6 +7,8 @@ namespace Infrastructure\Database;
 use Exception;
 use Infrastructure\Contract\DatabaseConnectionInterface;
 use Infrastructure\Contract\QueryInterface;
+use Infrastructure\Contract\ResourceMetadataColumnInterface;
+use Infrastructure\Contract\ResourceMetadataInterface;
 use PDOException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -17,6 +19,7 @@ use function array_merge;
 use function count;
 use function implode;
 use function in_array;
+use function is_array;
 use function method_exists;
 use function sprintf;
 use function strtoupper;
@@ -31,7 +34,7 @@ class Query implements QueryInterface
     ) {
     }
 
-    public function insert(array $metadata, mixed $resource): void
+    public function insert(array|ResourceMetadataInterface $metadata, mixed $resource): void
     {
         $pdo = $this->connection->connect();
         try {
@@ -56,7 +59,7 @@ class Query implements QueryInterface
         }
     }
 
-    public function update(array $metadata, mixed $resource): void
+    public function update(array|ResourceMetadataInterface $metadata, mixed $resource): void
     {
         $pdo = $this->connection->connect();
         try {
@@ -81,20 +84,27 @@ class Query implements QueryInterface
         }
     }
 
-    public function delete(array $metadata, mixed $resource): void
+    public function delete(array|ResourceMetadataInterface $metadata, mixed $resource): void
     {
         $pdo = $this->connection->connect();
         try {
-            $method = sprintf('get%s', ucfirst($metadata['primary']));
-            if (! method_exists($metadata['class'], $method)) {
+            $method = $metadata instanceof ResourceMetadataInterface ?
+                $metadata->getPrimaryKeyAccessor() :
+                sprintf('get%s', ucfirst($metadata['primary']));
+            $class  = $metadata instanceof ResourceMetadataInterface ?
+                $metadata->getClassName() : $metadata['class'];
+            if (! method_exists($class, $method)) {
                 throw new RuntimeException(
-                    sprintf('Method %s does not exists in %s class', $method, $metadata['class'])
+                    sprintf('Method %s does not exists in %s class', $method, $class)
                 );
             }
             $sql  = $this->generateDeleteSqlQuery($metadata);
             $stmt = $pdo->prepare($sql);
             $pdo->beginTransaction();
-            $success = $stmt->execute([$metadata['primary'] => $resource->$method()]);
+            $primary = $metadata instanceof ResourceMetadataInterface ?
+                $metadata->getPrimaryKeyName() :
+                $metadata['primary'];
+            $success = $stmt->execute([$primary => $resource->$method()]);
             $pdo->commit();
             if (false === $success) {
                 $this->logger->critical(
@@ -111,14 +121,14 @@ class Query implements QueryInterface
         }
     }
 
-    public function select(array $metadata, ?array $orderBy = []): array
+    public function select(array|ResourceMetadataInterface $metadata, ?array $orderBy = []): array
     {
         $pdo = $this->connection->connect();
         try {
             $sql     = trim(
                 sprintf(
                     'SELECT * FROM %s %s',
-                    $metadata['table'],
+                    $metadata instanceof ResourceMetadataInterface ? $metadata->getTableName() : $metadata['table'],
                     $orderBy ? $this->generateOrderByPart($metadata, $orderBy) : ''
                 )
             );
@@ -144,12 +154,13 @@ class Query implements QueryInterface
         }
     }
 
-    public function selectWhere(array $metadata, array $conditions): array
+    public function selectWhere(array|ResourceMetadataInterface $metadata, array $conditions): array
     {
         $pdo = $this->connection->connect();
         try {
             $conditionsStr = [];
             $parameters    = [];
+            $table         = $metadata instanceof ResourceMetadataInterface ? $metadata->getTableName() : $metadata['table'];
             foreach ($conditions as $condition) {
                 $conditionsStr[] = $condition['condition'];
                 $parameters      = array_merge($condition['parameters']);
@@ -158,7 +169,7 @@ class Query implements QueryInterface
             $sql           = trim(
                 sprintf(
                     'SELECT * FROM %s WHERE %s',
-                    $metadata['table'],
+                    $table,
                     $conditionsStr
                 )
             );
@@ -184,7 +195,7 @@ class Query implements QueryInterface
         }
     }
 
-    public function selectSingleWhere(array $metadata, array $conditions): array
+    public function selectSingleWhere(array|ResourceMetadataInterface $metadata, array $conditions): array
     {
         $pdo = $this->connection->connect();
         try {
@@ -198,7 +209,9 @@ class Query implements QueryInterface
             $sql           = trim(
                 sprintf(
                     'SELECT * FROM %s WHERE %s',
-                    $metadata['table'],
+                    $metadata instanceof ResourceMetadataInterface ?
+                        $metadata->getTableName() :
+                        $metadata['table'],
                     $conditionsStr
                 )
             );
@@ -236,9 +249,11 @@ class Query implements QueryInterface
         }
     }
 
-    public function generateInsertSqlQuery(array $metadata): string
+    public function generateInsertSqlQuery(array|ResourceMetadataInterface $metadata): string
     {
-        $values          = array_keys($metadata['columns']);
+        $values          = $metadata instanceof ResourceMetadataInterface ?
+            $metadata->getColumnNames() :
+            array_keys($metadata['columns']);
         $columns         = trim(implode(', ', $values));
         $parameters      = array_map(
             function ($param) {
@@ -250,17 +265,26 @@ class Query implements QueryInterface
 
         return sprintf(
             'INSERT INTO %s (%s) VALUES (%s)',
-            $metadata['table'],
+            $metadata instanceof ResourceMetadataInterface ? $metadata->getTableName() : $metadata['table'],
             $columns,
             $namedParameters
         );
     }
 
-    public function generateUpdateSqlQuery(array $metadata): string
+    public function generateUpdateSqlQuery(array|ResourceMetadataInterface $metadata): string
     {
         $setClause = [];
-        foreach (array_keys($metadata['columns']) as $column) {
-            if ($column === $metadata['primary']) {
+        $columns   = $metadata instanceof ResourceMetadataInterface ?
+            $metadata->getColumnNames() :
+            array_keys($metadata['columns']);
+        $primary   = $metadata instanceof ResourceMetadataInterface ?
+            $metadata->getPrimaryKeyName() :
+            $metadata['primary'];
+        $table     = $metadata instanceof ResourceMetadataInterface ?
+            $metadata->getTableName() :
+            $metadata['table'];
+        foreach ($columns as $column) {
+            if ($column === $primary) {
                 continue;
             }
             $setClause[] = sprintf(
@@ -272,30 +296,31 @@ class Query implements QueryInterface
         $setClause   = trim(implode(', ', $setClause));
         $whereClause = sprintf(
             '%s = :%s',
-            $metadata['primary'],
-            $metadata['primary']
+            $primary,
+            $primary
         );
         return sprintf(
             'UPDATE %s SET %s WHERE %s',
-            $metadata['table'],
+            $table,
             $setClause,
             $whereClause
         );
     }
 
-    public function generateDeleteSqlQuery(array $metadata): string
+    public function generateDeleteSqlQuery(array|ResourceMetadataInterface $metadata): string
     {
         return sprintf(
-            'DELETE FROM %s WHERE uuid = :%s',
-            $metadata['table'],
-            $metadata['primary']
+            'DELETE FROM %s WHERE %s = :%s',
+            $metadata instanceof ResourceMetadataInterface ? $metadata->getTableName() : $metadata['table'],
+            $metadata instanceof ResourceMetadataInterface ? $metadata->getPrimaryKeyName() : $metadata['primary'],
+            $metadata instanceof ResourceMetadataInterface ? $metadata->getPrimaryKeyName() : $metadata['primary']
         );
     }
 
-    public function generateOrderByPart(array $metadata, array $orderBy): string
+    public function generateOrderByPart(array|ResourceMetadataInterface $metadata, array $orderBy): string
     {
         $orderByStr = [];
-        $columns    = array_keys($metadata['columns']);
+        $columns    = $metadata instanceof ResourceMetadataInterface ? $metadata->getColumnNames() : array_keys($metadata['columns']);
         foreach ($orderBy as $column => $order) {
             $order = strtoupper($order);
             if (
@@ -317,17 +342,31 @@ class Query implements QueryInterface
         );
     }
 
-    public function prepareDataForInsert(array $metadata, mixed $resource): array
+    public function prepareDataForInsert(array|ResourceMetadataInterface $metadata, mixed $resource): array
     {
         $data = [];
-        foreach ($metadata['columns'] as $name => $meta) {
-            $method = sprintf('get%s', ucfirst($meta['property']));
-            if (! method_exists($metadata['class'], $method)) {
-                throw new RuntimeException(
-                    sprintf('Method %s does not exists in %s class', $method, $metadata['class'])
-                );
+        if (is_array($metadata)) {
+            foreach ($metadata['columns'] as $name => $meta) {
+                $method = sprintf('get%s', ucfirst($meta['property']));
+                if (! method_exists($metadata['class'], $method)) {
+                    throw new RuntimeException(
+                        sprintf('Method %s does not exists in %s class', $method, $metadata['class'])
+                    );
+                }
+                $data[$name] = $resource->$method();
             }
-            $data[$name] = $resource->$method();
+        }
+        if ($metadata instanceof ResourceMetadataInterface) {
+            foreach ($metadata->getColumns() as $name => $meta) {
+                /** @var ResourceMetadataColumnInterface $meta */
+                $method = $meta->getResourcePropertyAccessorName();
+                if (! method_exists($metadata->getClassName(), $method)) {
+                    throw new RuntimeException(
+                        sprintf('Method %s does not exists in %s class', $method, $metadata->getClassName())
+                    );
+                }
+                $data[$name] = $resource->$method();
+            }
         }
 
         return $data;
