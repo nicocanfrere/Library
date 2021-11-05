@@ -10,6 +10,7 @@ use Library\Contract\UpdateSubscriberInterface;
 use Library\Exception\LibrarySubscriberEmailAlreadyUsedException;
 use Library\Exception\LibrarySubscriberNotFoundException;
 use Library\LibrarySubscriber;
+use Library\Specification\EmailIsAvailableSpecification;
 use Psr\Log\LoggerInterface;
 
 use function array_filter;
@@ -20,6 +21,7 @@ class UpdateSubscriber implements UpdateSubscriberInterface
 {
     public function __construct(
         private LibrarySubscriberRepositoryInterface $repository,
+        private EmailIsAvailableSpecification $emailIsAvailableSpecification,
         private LoggerInterface $logger
     ) {
     }
@@ -39,8 +41,7 @@ class UpdateSubscriber implements UpdateSubscriberInterface
             array_key_exists('email', $data)
             && $data['email'] !== $subscriber['email']
         ) {
-            $exists = $this->repository->findOneByEmail($data['email']);
-            if ($exists && $exists['uuid'] !== $subscriber['uuid']) {
+            if (! $this->emailIsAvailableSpecification->isSatisfiedBy($subscriber)) {
                 $exception = new LibrarySubscriberEmailAlreadyUsedException();
                 $this->logger->critical(
                     __METHOD__,

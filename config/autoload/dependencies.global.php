@@ -47,6 +47,8 @@ return [
             => App\Factory\SubscriberReturnBookFactory::class,
             Library\Contract\BookBorrowRegistryFactoryInterface::class
             => App\Factory\BookBorrowRegistryFactoryFactory::class,
+            Library\Specification\EmailIsAvailableSpecification::class
+            => App\Factory\EmailIsAvailableSpecificationFactory::class,
         ],
     ],
 ];

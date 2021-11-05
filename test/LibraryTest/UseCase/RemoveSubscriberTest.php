@@ -10,6 +10,7 @@ use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Exception\LibrarySubscriberNotFoundException;
 use Library\LibrarySubscriberFactory;
+use Library\Specification\EmailIsAvailableSpecification;
 use Library\UseCase\RemoveSubscriber;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -57,9 +58,10 @@ class RemoveSubscriberTest extends TestCase
         $this->repository->method('findLibrarySubscriberByUuid')->willReturn($values);
         $identifierFactory = $this->createMock(IdentifierFactoryInterface::class);
         $identifierFactory->method('create')->willReturn('uuid');
+        $specification = $this->createMock(EmailIsAvailableSpecification::class);
         $removeSubscriber = new RemoveSubscriber(
             $this->repository,
-            new LibrarySubscriberFactory($this->repository, $identifierFactory, $this->logger),
+            new LibrarySubscriberFactory($this->repository, $identifierFactory, $specification, $this->logger),
             $this->logger
         );
         $subscriber       = $removeSubscriber->remove('uuid');

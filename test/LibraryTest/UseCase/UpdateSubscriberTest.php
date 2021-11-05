@@ -8,6 +8,7 @@ use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Exception\LibrarySubscriberEmailAlreadyUsedException;
 use Library\Exception\LibrarySubscriberNotFoundException;
+use Library\Specification\EmailIsAvailableSpecification;
 use Library\UseCase\UpdateSubscriber;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -30,7 +31,8 @@ class UpdateSubscriberTest extends TestCase
     {
         $values = ['uuid' => 'uuid', 'first_name' => '', 'last_name' => '', 'email' => 'email@example.com'];
         $this->subscriberRepository->method('findLibrarySubscriberByUuid')->willReturn(null);
-        $updateSubscriber = new UpdateSubscriber($this->subscriberRepository, $this->logger);
+        $specification = $this->createMock(EmailIsAvailableSpecification::class);
+        $updateSubscriber = new UpdateSubscriber($this->subscriberRepository, $specification, $this->logger);
         $this->expectException(LibrarySubscriberNotFoundException::class);
         $updatedSubscriber = $updateSubscriber->update(
             'uuid',
@@ -47,10 +49,9 @@ class UpdateSubscriberTest extends TestCase
         $this
             ->subscriberRepository
             ->method('findLibrarySubscriberByUuid')->willReturn(['uuid' => 'uuid', 'email' => 'email@example.com']);
-        $this
-            ->subscriberRepository
-            ->method('findOneByEmail')->willReturn(['uuid' => 'other', 'email' => 'updated_email@example.com']);
-        $updateSubscriber = new UpdateSubscriber($this->subscriberRepository, $this->logger);
+        $specification = $this->createMock(EmailIsAvailableSpecification::class);
+        $specification->method('isSatisfiedBy')->willReturn(false);
+        $updateSubscriber = new UpdateSubscriber($this->subscriberRepository, $specification, $this->logger);
         $this->expectException(LibrarySubscriberEmailAlreadyUsedException::class);
         $updatedSubscriber = $updateSubscriber->update(
             'uuid',
@@ -78,7 +79,9 @@ class UpdateSubscriberTest extends TestCase
                 'email'      => 'new_email@example.com',
             ];
         $this->subscriberRepository->method('findLibrarySubscriberByUuid')->willReturn($subscriber);
-        $updateSubscriber  = new UpdateSubscriber($this->subscriberRepository, $this->logger);
+        $specification = $this->createMock(EmailIsAvailableSpecification::class);
+        $specification->method('isSatisfiedBy')->willReturn(true);
+        $updateSubscriber  = new UpdateSubscriber($this->subscriberRepository, $specification, $this->logger);
         $updatedSubscriber = $updateSubscriber->update(
             'uuid',
             $values
@@ -103,8 +106,10 @@ class UpdateSubscriberTest extends TestCase
         ];
         $values     = ['uuid' => 'uuid', 'first_name' => '', 'email' => 'new_email@example.com'];
         $this->subscriberRepository->method('findLibrarySubscriberByUuid')->willReturn($subscriber);
-        $this->subscriberRepository->method('findOneByEmail')->willReturn(null);
-        $updateSubscriber  = new UpdateSubscriber($this->subscriberRepository, $this->logger);
+        //$this->subscriberRepository->method('findOneByEmail')->willReturn(null);
+        $specification = $this->createMock(EmailIsAvailableSpecification::class);
+        $specification->method('isSatisfiedBy')->willReturn(true);
+        $updateSubscriber  = new UpdateSubscriber($this->subscriberRepository, $specification, $this->logger);
         $updatedSubscriber = $updateSubscriber->update(
             'uuid',
             $values

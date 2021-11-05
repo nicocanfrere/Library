@@ -9,6 +9,7 @@ use Library\Contract\LibrarySubscriberFactoryInterface;
 use Library\Contract\LibrarySubscriberInterface;
 use Library\Contract\LibrarySubscriberRepositoryInterface;
 use Library\Exception\LibrarySubscriberEmailAlreadyUsedException;
+use Library\Specification\EmailIsAvailableSpecification;
 use Psr\Log\LoggerInterface;
 
 class LibrarySubscriberFactory implements LibrarySubscriberFactoryInterface
@@ -16,6 +17,7 @@ class LibrarySubscriberFactory implements LibrarySubscriberFactoryInterface
     public function __construct(
         private LibrarySubscriberRepositoryInterface $repository,
         private IdentifierFactoryInterface $identifierFactory,
+        private EmailIsAvailableSpecification $emailIsAvailableSpecification,
         private LoggerInterface $logger
     ) {
     }
@@ -23,8 +25,8 @@ class LibrarySubscriberFactory implements LibrarySubscriberFactoryInterface
     public function create(array $data, ?bool $save = true): LibrarySubscriberInterface
     {
         if ($save) {
-            $exists = $this->repository->findOneByEmail($data['email']);
-            if (! empty($exists)) {
+            //$exists = $this->repository->findOneByEmail($data['email']);
+            if (! $this->emailIsAvailableSpecification->isSatisfiedBy($data)) {
                 $exception = new LibrarySubscriberEmailAlreadyUsedException();
                 $this->logger->critical(
                     __METHOD__,
